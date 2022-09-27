@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   createPool,
   FieldPacket,
@@ -8,22 +8,27 @@ import {
   ResultSetHeader,
   RowDataPacket,
 } from 'mysql2/promise';
-import { v4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
+import { DatabaseService } from './database.interface';
 
 @Injectable()
-export class MasterDatabaseService {
+export class MasterDatabaseService implements DatabaseService {
   private pool: Pool;
   constructor(private readonly configService: ConfigService) {
-    this.pool = createPool({
-      host: this.configService.get('DB_HOST'),
-      port: this.configService.get('MASTER_DB_PORT'),
-      user: this.configService.get('DB_USER'),
-      password: this.configService.get('DB_PASSWORD'),
-      database: this.configService.get('DB_NAME'),
-      connectionLimit: 2,
-      connectTimeout: 5000,
-    });
+    try {
+      this.pool = createPool({
+        host: this.configService.get('DB_HOST'),
+        port: this.configService.get('MASTER_DB_PORT'),
+        user: this.configService.get('DB_USER'),
+        password: this.configService.get('DB_PASSWORD'),
+        database: this.configService.get('DB_NAME'),
+        connectionLimit: 2,
+        connectTimeout: 5000,
+      });
+      Logger.log('create master database pool', 'CreatePool');
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getConnection(): Promise<PoolConnection> {
@@ -61,19 +66,6 @@ export class MasterDatabaseService {
       throw error;
     } finally {
       conn.release();
-    }
-  }
-
-  async genCode(): Promise<string> {
-    try {
-      const uuid = () => {
-        const tokens = v4().split('-');
-        return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
-      };
-
-      return uuid();
-    } catch (error) {
-      throw error;
     }
   }
 
