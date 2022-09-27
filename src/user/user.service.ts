@@ -4,14 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { UsefulService } from 'src/useful/useful.service';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<object> {
     try {
       const salt = await bcrypt.genSalt();
-
       createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
       return this.userRepository.create(createUserDto);
     } catch (error) {

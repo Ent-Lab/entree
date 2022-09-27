@@ -19,7 +19,15 @@ export class UserRepository {
     private readonly slaveDatabaseService: SlaveDatabaseService,
     private readonly masterDatabaseService: MasterDatabaseService
   ) {}
-  create(createUserDto: CreateUserDto) {
+  create(
+    createUserDto: CreateUserDto
+  ): Promise<
+    | RowDataPacket[]
+    | RowDataPacket[][]
+    | OkPacket
+    | OkPacket[]
+    | ResultSetHeader
+  > {
     try {
       const { code, login_type, email, password } = createUserDto;
       return this.masterDatabaseService.query(`
