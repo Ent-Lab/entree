@@ -20,35 +20,43 @@ export class UserRepository {
     private readonly masterDatabaseService: MasterDatabaseService
   ) {}
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
-
-  async selectAll() {
-    const con: PoolConnection =
-      await this.masterDatabaseService.getConnection();
     try {
-      const users: [
-        (
-          | RowDataPacket[]
-          | RowDataPacket[][]
-          | OkPacket
-          | OkPacket[]
-          | ResultSetHeader
-        ),
-        FieldPacket[]
-      ] = await con.query(`
-      SELECT * FROM user;
+      const { code, login_type, email, password } = createUserDto;
+      return this.masterDatabaseService.query(`
+      INSERT INTO user 
+      (code, login_type, email, password) 
+      VALUES (${code},${login_type}, ${email}, ${password});
       `);
-      return users[0];
     } catch (error) {
       throw error;
-    } finally {
-      con.release();
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async selectAll() {
+    try {
+      return this.slaveDatabaseService.query(`
+      SELECT 
+      id, code, login_type, email, password, created_time, updated_time FROM
+      user;
+      `);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  selectOneById(id: number) {
+    try {
+      return this.slaveDatabaseService.query(`
+      SELECT 
+      id, code, login_type, email, password, created_time, updated_time FROM
+      user
+      WHERE
+      id=${id}
+      ;
+      `);
+    } catch (error) {
+      throw error;
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

@@ -43,8 +43,8 @@ export class MasterDatabaseService {
     | OkPacket[]
     | ResultSetHeader
   > {
+    const conn: PoolConnection = await this.getConnection();
     try {
-      const conn: PoolConnection = await this.pool.getConnection();
       const data: [
         (
           | RowDataPacket[]
@@ -59,6 +59,8 @@ export class MasterDatabaseService {
       return data[0];
     } catch (error) {
       throw error;
+    } finally {
+      conn.release();
     }
   }
 
