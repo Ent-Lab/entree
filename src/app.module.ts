@@ -4,9 +4,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './database/database.module';
-import { UsefulService } from './useful/useful.service';
+import { BullModule } from '@nestjs/bull';
 import { UsefulModule } from './useful/useful.module';
 import * as Joi from 'joi';
+import { MessageConsumer } from './message.consumer';
+import { MasterDatabaseService } from './database/master.database.service';
 
 const ENV = process.env.NODE_ENV;
 Logger.debug(ENV);
@@ -29,8 +31,17 @@ Logger.debug(ENV);
     UserModule,
     DatabaseModule,
     UsefulModule,
+    BullModule.forRoot({
+      redis: {
+        host: '43.201.8.8',
+        port: 6379,
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'message-queue',
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MessageConsumer, MasterDatabaseService],
 })
 export class AppModule {}

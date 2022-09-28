@@ -22,7 +22,8 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
-      createUserDto.code = await this.usefulService.genCode();
+      const code = await this.usefulService.genCode();
+      createUserDto.code = code;
       return this.userService.create(createUserDto);
     } catch (error) {
       throw error;
@@ -31,21 +32,37 @@ export class UserController {
 
   @Get()
   findAll() {
-    return this.userService.findAll();
+    try {
+      return this.userService.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    try {
+      return this.userService.findOne(+id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+    try {
+      return this.userService.update(+id, updateUserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    try {
+      return this.userService.remove(+id);
+    } catch (error) {
+      throw error;
+    }
   }
 }
