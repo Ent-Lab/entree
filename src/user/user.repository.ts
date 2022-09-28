@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue, Job } from 'bull';
+import { query } from 'express';
 
 @Injectable()
 export class UserRepository {
@@ -23,7 +24,6 @@ export class UserRepository {
         'send-query',
         `INSERT INTO user (code, login_type, email, password) VALUES ('${code}','${login_type}', '${email}', '${password}');`
       );
-      console.log(await this.queue.getJobCounts());
       return true;
     } catch (error) {
       throw error;
@@ -57,12 +57,50 @@ export class UserRepository {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async updateOneById(id: number, updateUserDto: UpdateUserDto) {
+    const con = await this.masterDatabaseService.getConnection();
     try {
-    } catch (error) {}
+      await con.beginTransaction();
+      const selectForUpdate = (
+        await con.query(
+          `SELECT login_type, email, password FROM user WHERE id='${id}' FOR UPDATE;`
+        )
+      )[0][0];
+      const login_type = updateUserDto.login_type
+        ? updateUserDto.login_type
+        : selectForUpdate.login_type;
+      const email = updateUserDto.email
+        ? updateUserDto.email
+        : selectForUpdate.login_type;
+      const password = updateUserDto.password
+        ? updateUserDto.password
+        : selectForUpdate.password;
+      await con.query(`
+        UPDATE user
+        SET login_type='${login_type}', email='${email}', password='${password}'
+        WHERE id='${id}';
+        `);
+      con.commit();
+      return true;
+    } catch (error) {
+      throw error;
+    } finally {
+      con.release();
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  deleteOneById(id: number) {
+    try {
+      this.queue.add(
+        'send-query',
+        `
+      DELETE FROM user 
+      WHERE id='${id}';
+      `
+      );
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -13,6 +13,7 @@ export class MessageConsumer {
     const con = await this.masterDatabaseService.getConnection();
     try {
       const sql: string = job.data;
+      console.log(sql);
       await con.query(sql);
       console.log('Success to send query \n', sql);
       console.log('Job Counts', await this.queue.getJobCounts());

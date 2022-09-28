@@ -37,10 +37,18 @@ export class UserService {
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    try {
+      return this.userRepository.updateOneById(id, updateUserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    try {
+      return this.userRepository.deleteOneById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 }
