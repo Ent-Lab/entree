@@ -9,10 +9,11 @@ import { UsefulService } from 'src/useful/useful.service';
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
-  async create(createUserDto: CreateUserDto): Promise<object> {
+  async create(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const salt = await bcrypt.genSalt();
+      const salt: string = await bcrypt.genSalt();
       createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+
       return this.userRepository.create(createUserDto);
     } catch (error) {
       throw error;
@@ -20,7 +21,11 @@ export class UserService {
   }
 
   findAll() {
-    return this.userRepository.selectAll();
+    try {
+      return this.userRepository.selectAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   findOne(id: number) {

@@ -40,15 +40,7 @@ export class SlaveDatabaseService implements DatabaseService {
     }
   }
 
-  async query(
-    sql: string
-  ): Promise<
-    | RowDataPacket[]
-    | RowDataPacket[][]
-    | OkPacket
-    | OkPacket[]
-    | ResultSetHeader
-  > {
+  async query(sql: string): Promise<object[]> {
     try {
       const conn: PoolConnection = await this.pool.getConnection();
       const data: [
@@ -62,7 +54,11 @@ export class SlaveDatabaseService implements DatabaseService {
         FieldPacket[]
       ] = await conn.query(sql);
       conn.release();
-      return data[0];
+      const rowData: object[] = [];
+      for (const i in data[0]) {
+        rowData.push(data[0][i]);
+      }
+      return rowData;
     } catch (error) {
       throw error;
     }
