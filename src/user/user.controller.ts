@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsefulService } from 'src/useful/useful.service';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('user')
 export class UserController {
@@ -19,12 +20,25 @@ export class UserController {
     private readonly usefulService: UsefulService
   ) {}
 
+  /**
+   * 회원가입
+   * @param createUserDto
+   * @returns true
+   */
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async register(@Body() createUserDto: CreateUserDto) {
     try {
       const code = await this.usefulService.genCode();
       createUserDto.code = code;
-      return this.userService.create(createUserDto);
+      return this.userService.register(createUserDto);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Post()
+  async login(@Body() loginDto: LoginDto) {
+    try {
     } catch (error) {
       throw error;
     }

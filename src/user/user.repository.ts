@@ -4,16 +4,27 @@ import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
-import { Queue, Job } from 'bull';
+import { Queue } from 'bull';
 import { query } from 'express';
-
+import { UserVo } from './vo/user.vo';
+/**
+ * 유저 레포지토리입니다.
+ */
 @Injectable()
 export class UserRepository {
   constructor(
+    /**
+     * BULL 메시지 큐를 사용하여 DB에 비동기 프로세스로 접근합니다.
+     */
     @InjectQueue('message-queue') private queue: Queue,
     private readonly slaveDatabaseService: SlaveDatabaseService,
     private readonly masterDatabaseService: MasterDatabaseService
   ) {}
+  /**
+   * 유저 생성 쿼리
+   * @param createUserDto
+   * @returns true
+   */
   async create(createUserDto: CreateUserDto): Promise<boolean> {
     try {
       const code = createUserDto.code;
@@ -30,7 +41,7 @@ export class UserRepository {
     }
   }
 
-  async selectAll() {
+  async selectAll(): Promise<object[]> {
     try {
       return this.slaveDatabaseService.query(`
       SELECT 
@@ -42,9 +53,9 @@ export class UserRepository {
     }
   }
 
-  selectOneById(id: number): Promise<object> {
+  async selectOneById(id: number): Promise<object | boolean> {
     try {
-      return this.slaveDatabaseService.query(`
+      const userData = await this.slaveDatabaseService.query(`
       SELECT 
       id, code, login_type, email, password, created_time, updated_time FROM
       user
@@ -52,12 +63,38 @@ export class UserRepository {
       id=${id}
       ;
       `);
+      if (userData.length === 0) {
+        return false;
+      }
+      return userData[0];
     } catch (error) {
       throw error;
     }
   }
 
-  async updateOneById(id: number, updateUserDto: UpdateUserDto) {
+  async selectOneByEmail(email: string): Promise<object | boolean> {
+    try {
+      const userData = await this.slaveDatabaseService.query(`
+      SELECT 
+      id, code, login_type, email, password, created_time, updated_time FROM
+      user
+      WHERE
+      email='${email}'
+      ;
+      `);
+      if (userData.length === 0) {
+        return false;
+      }
+      return userData[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateOneById(
+    id: number,
+    updateUserDto: UpdateUserDto
+  ): Promise<boolean> {
     const con = await this.masterDatabaseService.getConnection();
     try {
       await con.beginTransaction();
@@ -89,9 +126,9 @@ export class UserRepository {
     }
   }
 
-  deleteOneById(id: number) {
+  async deleteOneById(id: number): Promise<boolean> {
     try {
-      this.queue.add(
+      await this.queue.add(
         'send-query',
         `
       DELETE FROM user 

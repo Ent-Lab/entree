@@ -1,39 +1,9 @@
-import { IsDate, IsEmail, IsNumber, IsString } from 'class-validator';
+import { PartialType, PickType } from '@nestjs/mapped-types';
+import { UserVo } from '../vo/user.vo';
 
-export class CreateUserDto {
-  code: string;
-
-  login_type: string;
-
-  email: string;
-
-  password: string;
-
-  // getCode(): string {
-  //   return this.code;
-  // }
-  // setCode(v: string) {
-  //   this.code = v;
-  // }
-
-  // getLoginType(): string {
-  //   return this.login_type;
-  // }
-  // setLoginType(v: string) {
-  //   this.login_type = v;
-  // }
-
-  // getEmail(): string {
-  //   return this.email;
-  // }
-  // setEmail(v: string) {
-  //   this.email = v;
-  // }
-
-  // getPassword(): string {
-  //   return this.password;
-  // }
-  // setPassword(v: string) {
-  //   this.password = v;
-  // }
-}
+export class CreateUserDto extends PickType(UserVo, [
+  'code',
+  'login_type',
+  'email',
+  'password',
+]) {}
