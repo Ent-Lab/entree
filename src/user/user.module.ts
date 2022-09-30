@@ -8,11 +8,23 @@ import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { UsefulModule } from 'src/useful/useful.module';
 import { UsefulService } from 'src/useful/useful.service';
 import { BullModule } from '@nestjs/bull';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     DatabaseModule,
     UsefulModule,
+    ConfigModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET_KEY'),
+      }),
+    }),
     BullModule.forRoot({
       redis: {
         host: '43.201.8.8',
@@ -30,6 +42,7 @@ import { BullModule } from '@nestjs/bull';
     MasterDatabaseService,
     SlaveDatabaseService,
     UsefulService,
+    JwtStrategy,
   ],
 })
 export class UserModule {}

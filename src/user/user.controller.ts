@@ -36,9 +36,10 @@ export class UserController {
     }
   }
 
-  @Post()
+  @Post('login')
   async login(@Body() loginDto: LoginDto) {
     try {
+      return this.userService.login(loginDto);
     } catch (error) {
       throw error;
     }
