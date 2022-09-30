@@ -28,7 +28,7 @@ export class UserController {
   @Post()
   async register(@Body() createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const code = await this.usefulService.genCode();
+      const code: string = await this.usefulService.genCode();
       createUserDto.code = code;
       return this.userService.register(createUserDto);
     } catch (error) {
