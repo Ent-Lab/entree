@@ -16,20 +16,35 @@ export class UserService {
    */
   async register(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      // 이메일 중복 체크
-      const isExistEmail: boolean | object =
-        await this.userRepository.selectOneByEmail(createUserDto.email);
-
-      if (isExistEmail) {
-        throw new ConflictException('이미 존재하는 이메일입니다.');
-      }
-      const salt: string = await bcrypt.genSalt();
-      createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
-
+      await Promise.all([
+        this.emailValidation(createUserDto), // 이메일 중복 체크
+        this.hashPassword(createUserDto), // 비밀번호 암호화
+      ]);
       return this.userRepository.create(createUserDto);
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * 이메일 중복체크
+   * @param createUserDto
+   */
+  async emailValidation(createUserDto: CreateUserDto): Promise<void> {
+    const isExistEmail: boolean | object =
+      await this.userRepository.selectOneByEmail(createUserDto.email);
+    if (isExistEmail) {
+      throw new ConflictException('이미 존재하는 이메일입니다.');
+    }
+  }
+
+  /**
+   * 비밀번호 암호화
+   * @param createUserDto
+   */
+  async hashPassword(createUserDto: CreateUserDto): Promise<void> {
+    const salt: string = await bcrypt.genSalt();
+    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
   }
 
   /**
