@@ -27,10 +27,10 @@ export class UserRepository {
    */
   async create(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const code = createUserDto.code;
-      const login_type = createUserDto.login_type;
-      const email = createUserDto.email;
-      const password = createUserDto.password;
+      const code: string = createUserDto.code;
+      const login_type: string = createUserDto.login_type;
+      const email: string = createUserDto.email;
+      const password: string = createUserDto.password;
       await this.queue.add(
         'send-query',
         `INSERT INTO user (code, login_type, email, password) VALUES ('${code}','${login_type}', '${email}', '${password}');`
