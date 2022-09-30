@@ -1,14 +1,22 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { UsefulService } from 'src/useful/useful.service';
+import { LoginDto } from './dto/login.dto';
+import { UserVo } from './vo/user.vo';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService
+  ) {}
   /**
    * 유저 회원가입
    * @param createUserDto
@@ -26,6 +34,36 @@ export class UserService {
     }
   }
 
+  /**
+   * 로그인
+   * @param loginDto
+   */
+  async login(loginDto: LoginDto) {
+    try {
+      const { email, password } = loginDto;
+      const userData = await this.findOneByEmail(email);
+      const user: UserVo = userData[0];
+      return this.validateUser(user, password);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * 유저 검증
+   * @param user
+   * @param password
+   * @returns
+   */
+  async validateUser(user: UserVo, password: string): Promise<object> {
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const payload = { email: user.email };
+      const token = this.jwtService.sign(payload);
+      return { token, expiresIn: '1h' };
+    } else {
+      throw new UnauthorizedException('잘못된 이메일 또는 비밀번호 입니다.');
+    }
+  }
   /**
    * 이메일 중복체크
    * @param createUserDto
@@ -64,9 +102,17 @@ export class UserService {
    * @param id
    * @returns 유저
    */
-  findOne(id: number) {
+  async findOne(id: number) {
     try {
       return this.userRepository.selectOneById(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findOneByEmail(email: string) {
+    try {
+      return this.userRepository.selectOneByEmail(email);
     } catch (error) {
       throw error;
     }
