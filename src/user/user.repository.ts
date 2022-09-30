@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { MasterDatabaseService } from 'src/database/master.database.service';
 import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -85,7 +85,7 @@ export class UserRepository {
       if (userData.length === 0) {
         return false;
       }
-      return userData[0];
+      return userData;
     } catch (error) {
       throw error;
     }
@@ -103,6 +103,9 @@ export class UserRepository {
           `SELECT login_type, email, password FROM user WHERE id='${id}' FOR UPDATE;`
         )
       )[0][0];
+      if (selectForUpdate === undefined) {
+        throw new NotFoundException('존재하지 않는 유저입니다.');
+      }
       const login_type = updateUserDto.login_type
         ? updateUserDto.login_type
         : selectForUpdate.login_type;
