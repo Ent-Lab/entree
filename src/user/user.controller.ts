@@ -26,7 +26,7 @@ export class UserController {
    * @returns true
    */
   @Post()
-  async register(@Body() createUserDto: CreateUserDto) {
+  async register(@Body() createUserDto: CreateUserDto): Promise<boolean> {
     try {
       const code = await this.usefulService.genCode();
       createUserDto.code = code;
@@ -45,7 +45,7 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<object[]> {
     try {
       return this.userService.findAll();
     } catch (error) {
@@ -54,7 +54,7 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<boolean | object> {
     try {
       return this.userService.findOne(+id);
     } catch (error) {
@@ -63,7 +63,10 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto
+  ): Promise<boolean> {
     try {
       return this.userService.update(+id, updateUserDto);
     } catch (error) {
@@ -72,7 +75,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<boolean> {
     try {
       return this.userService.remove(+id);
     } catch (error) {
