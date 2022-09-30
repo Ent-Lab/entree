@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsefulService } from 'src/useful/useful.service';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('user')
 export class UserController {
@@ -19,11 +20,25 @@ export class UserController {
     private readonly usefulService: UsefulService
   ) {}
 
+  /**
+   * 회원가입
+   * @param createUserDto
+   * @returns true
+   */
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async register(@Body() createUserDto: CreateUserDto) {
     try {
-      createUserDto.code = await this.usefulService.genCode();
-      return this.userService.create(createUserDto);
+      const code = await this.usefulService.genCode();
+      createUserDto.code = code;
+      return this.userService.register(createUserDto);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Post()
+  async login(@Body() loginDto: LoginDto) {
+    try {
     } catch (error) {
       throw error;
     }
@@ -31,21 +46,37 @@ export class UserController {
 
   @Get()
   findAll() {
-    return this.userService.findAll();
+    try {
+      return this.userService.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    try {
+      return this.userService.findOne(+id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+    try {
+      return this.userService.update(+id, updateUserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    try {
+      return this.userService.remove(+id);
+    } catch (error) {
+      throw error;
+    }
   }
 }
