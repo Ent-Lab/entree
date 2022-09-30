@@ -12,13 +12,4 @@ import {
  */
 export interface DatabaseService {
   getConnection(): Promise<PoolConnection>;
-  query(
-    sql: string
-  ): Promise<
-    | RowDataPacket[]
-    | RowDataPacket[][]
-    | OkPacket
-    | OkPacket[]
-    | ResultSetHeader
-  >;
 }
