@@ -5,8 +5,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { query } from 'express';
-import { UserVo } from './vo/user.vo';
 /**
  * 유저 레포지토리입니다.
  */
@@ -31,9 +29,10 @@ export class UserRepository {
       const login_type: string = createUserDto.login_type;
       const email: string = createUserDto.email;
       const password: string = createUserDto.password;
+      const role: number = createUserDto.role;
       await this.queue.add(
         'send-query',
-        `INSERT INTO user (code, login_type, email, password) VALUES ('${code}','${login_type}', '${email}', '${password}');`
+        `INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', ${role});`
       );
       return true;
     } catch (error) {
