@@ -9,6 +9,7 @@ import { UsefulModule } from './useful/useful.module';
 import * as Joi from 'joi';
 import { MessageConsumer } from './message.consumer';
 import { MasterDatabaseService } from './database/master.database.service';
+import { PostModule } from './post/post.module';
 
 const ENV = process.env.NODE_ENV;
 Logger.debug(ENV);
@@ -40,6 +41,7 @@ Logger.debug(ENV);
     BullModule.registerQueue({
       name: 'message-queue',
     }),
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService, MessageConsumer, MasterDatabaseService],
