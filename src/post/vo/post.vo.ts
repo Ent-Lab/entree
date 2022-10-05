@@ -1,20 +1,17 @@
 import { IsString, IsEmail, IsNumber, IsDate } from 'class-validator';
 
-export class UserVo {
+export class PostVo {
   @IsString()
   code: string;
 
   @IsString()
-  login_type: string;
-
-  @IsEmail()
-  email: string;
+  title: string;
 
   @IsString()
-  password: string;
+  contents: string;
 
-  @IsNumber()
-  role: number;
+  @IsString()
+  fk_user_code: string;
 
   @IsDate()
   created_time: Date;
