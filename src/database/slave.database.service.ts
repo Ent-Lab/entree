@@ -8,7 +8,6 @@ import {
   ResultSetHeader,
   RowDataPacket,
 } from 'mysql2/promise';
-import { v4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from './database.interface';
 
@@ -61,6 +60,23 @@ export class SlaveDatabaseService implements DatabaseService {
       return rowData;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async transaction(sqls: string[]): Promise<boolean> {
+    const conn = await this.getConnection();
+    try {
+      await conn.beginTransaction();
+      sqls.forEach(async (sql) => {
+        await conn.query(sql);
+        console.log(sql);
+      });
+      return true;
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.commit();
     }
   }
 
