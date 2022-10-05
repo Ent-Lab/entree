@@ -38,7 +38,7 @@ export class UserService {
    * 로그인
    * @param loginDto
    */
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<object> {
     try {
       const { email, password } = loginDto;
       const userData = await this.findOneByEmail(email);
