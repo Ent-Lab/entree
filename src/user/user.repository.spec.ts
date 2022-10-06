@@ -18,9 +18,8 @@ import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 import { UserVo } from './vo/user.vo';
 
-describe('UserController', () => {
-  let controller: UserController;
-  let service: UserService;
+describe('UserRepository', () => {
+  let repository: UserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,7 +28,7 @@ describe('UserController', () => {
         UsefulModule,
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: `src/config/env/.development.env`,
+          envFilePath: `src/config/env/.test.env`,
           validationSchema: Joi.object({
             DB_HOST: Joi.string().required(),
             MASTER_DB_PORT: Joi.string().required(),
@@ -67,50 +66,8 @@ describe('UserController', () => {
       ],
     }).compile();
 
-    controller = module.get<UserController>(UserController);
-    service = module.get<UserService>(UserService);
+    repository = module.get<UserRepository>(UserRepository);
 
     const users: Array<object> = [];
-
-    /** 멤버쉽 추가 */
-    jest
-      .spyOn(service, 'register')
-      .mockImplementation(async (createUserDto: CreateUserDto) => {
-        try {
-          console.log({
-            id: 1,
-            ...createUserDto,
-          });
-          users.push({
-            id: 1,
-            ...createUserDto,
-          });
-          return true;
-        } catch (error) {
-          throw error;
-        }
-      });
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  describe('유저 회원가입 테스트', () => {
-    it('유저 회원가입 테스트', async () => {
-      expect(
-        await controller.register({
-          code: 'test_code',
-          login_type: 'local',
-          email: 'test_email@naver.com',
-          password: 'test_password',
-          role: 0,
-        })
-      ).toBe(true);
-    });
   });
 });
