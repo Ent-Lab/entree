@@ -40,6 +40,10 @@ export class UserRepository {
     }
   }
 
+  /**
+   * 유저 전체 조회
+   * @returns 유저 목록
+   */
   async selectAll(): Promise<object[]> {
     try {
       return this.slaveDatabaseService.query(`
@@ -52,6 +56,11 @@ export class UserRepository {
     }
   }
 
+  /**
+   * 유저 Id로 조회
+   * @param id
+   * @returns 유저
+   */
   async selectOneById(id: number): Promise<object | boolean> {
     try {
       const userData = await this.slaveDatabaseService.query(`
@@ -71,6 +80,11 @@ export class UserRepository {
     }
   }
 
+  /**
+   * 유저 이메일로 조회
+   * @param email
+   * @returns 이메일
+   */
   async selectOneByEmail(email: string): Promise<object | boolean> {
     try {
       const userData = await this.slaveDatabaseService.query(`
@@ -90,6 +104,12 @@ export class UserRepository {
     }
   }
 
+  /**
+   * 유저 정보 갱신
+   * @param id
+   * @param updateUserDto
+   * @returns true
+   */
   async updateOneById(
     id: number,
     updateUserDto: UpdateUserDto
@@ -128,6 +148,11 @@ export class UserRepository {
     }
   }
 
+  /**
+   * 유저 삭제
+   * @param id
+   * @returns true
+   */
   async deleteOneById(id: number): Promise<boolean> {
     try {
       await this.queue.add(
