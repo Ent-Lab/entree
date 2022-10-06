@@ -22,7 +22,6 @@ export class PostController {
   @Post()
   @UseGuards(AuthGuard())
   create(@GetUser() user: GetUserDto, @Body() createPostDto: CreatePostDto) {
-    console.log(user);
     createPostDto.fk_user_code = user.code;
     return this.postService.create(createPostDto);
   }
@@ -43,13 +42,13 @@ export class PostController {
     return this.postService.findByUser(user.code);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+  @Patch(':code')
+  update(@Param('code') code: string, @Body() updatePostDto: UpdatePostDto) {
+    return this.postService.update(code, updatePostDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  @Delete(':code')
+  remove(@Param('code') code: string) {
+    return this.postService.remove(code);
   }
 }
