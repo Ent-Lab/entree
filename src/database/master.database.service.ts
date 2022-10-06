@@ -33,7 +33,9 @@ export class MasterDatabaseService implements DatabaseService {
 
   async getConnection(): Promise<PoolConnection> {
     try {
-      return this.pool.getConnection();
+      const conn = await this.pool.getConnection();
+      Logger.log('Get connection', 'Promise pool');
+      return conn;
     } catch (error) {
       throw error;
     }
@@ -50,18 +52,8 @@ export class MasterDatabaseService implements DatabaseService {
   > {
     const conn: PoolConnection = await this.getConnection();
     try {
-      const data: [
-        (
-          | RowDataPacket[]
-          | RowDataPacket[][]
-          | OkPacket
-          | OkPacket[]
-          | ResultSetHeader
-        ),
-        FieldPacket[]
-      ] = await conn.query(sql);
-      conn.release();
-      return data[0];
+      const [data, fields] = await conn.query(sql);
+      return data;
     } catch (error) {
       throw error;
     } finally {

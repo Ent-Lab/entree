@@ -3,15 +3,11 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostRepository } from './post.repository';
 import { UsefulService } from '../useful/useful.service';
-import { UserRepository } from 'src/user/user.repository';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-
 @Injectable()
 export class PostService {
   constructor(
     private readonly postRepository: PostRepository,
-    private readonly userfulService: UsefulService,
-    private readonly userRepository: UserRepository
+    private readonly userfulService: UsefulService
   ) {}
 
   async create(createPostDto: CreatePostDto) {
@@ -39,19 +35,22 @@ export class PostService {
     }
   }
 
-  findByUser(code: string) {
+  findByUser(userCode: string) {
     try {
-      console.log(code);
+      return this.postRepository.selectByUser(userCode);
     } catch (error) {
       throw error;
     }
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  update(code: string, updatePostDto: UpdatePostDto) {
+    try {
+    } catch (error) {
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  remove(code: string) {
+    return `This action removes a #${code} post`;
   }
 }

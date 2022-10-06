@@ -28,7 +28,7 @@ describe('UserRepository', () => {
         UsefulModule,
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: `src/config/env/.development.env`,
+          envFilePath: `src/config/env/.test.env`,
           validationSchema: Joi.object({
             DB_HOST: Joi.string().required(),
             MASTER_DB_PORT: Joi.string().required(),
