@@ -123,6 +123,7 @@ export class UserRepository {
         )
       )[0][0];
       if (selectForUpdate === undefined) {
+        con.rollback();
         throw new NotFoundException('존재하지 않는 유저입니다.');
       }
       const login_type = updateUserDto.login_type

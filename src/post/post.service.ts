@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostRepository } from './post.repository';
 import { UsefulService } from '../useful/useful.service';
+import { GetPostDto } from './dto/get-post.dto';
+
 @Injectable()
 export class PostService {
   constructor(
@@ -19,7 +21,7 @@ export class PostService {
     }
   }
 
-  findAll() {
+  async findAll() {
     try {
       return this.postRepository.selectAll();
     } catch (error) {
@@ -27,7 +29,7 @@ export class PostService {
     }
   }
 
-  findOne(code: string) {
+  async findOne(code: string): Promise<GetPostDto> {
     try {
       return this.postRepository.selectByCode(code);
     } catch (error) {
@@ -35,7 +37,7 @@ export class PostService {
     }
   }
 
-  findByUser(userCode: string) {
+  async findByUser(userCode: string): Promise<GetPostDto> {
     try {
       return this.postRepository.selectByUser(userCode);
     } catch (error) {
@@ -43,8 +45,19 @@ export class PostService {
     }
   }
 
-  update(code: string, updatePostDto: UpdatePostDto) {
+  async update(userCode: string, code: string, updatePostDto: UpdatePostDto) {
     try {
+      const post: GetPostDto = await this.postRepository.selectByCode(code);
+      if (post.fk_user_code !== userCode) {
+        throw new ForbiddenException('자신의 정보만 수정할 수 있습니다.');
+      }
+      updatePostDto.title = updatePostDto.title
+        ? updatePostDto.title
+        : post.title;
+      updatePostDto.contents = updatePostDto.contents
+        ? updatePostDto.contents
+        : post.contents;
+      return this.postRepository.update(code, updatePostDto);
     } catch (error) {
       throw error;
     }

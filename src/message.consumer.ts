@@ -12,11 +12,8 @@ export class MessageConsumer {
   async sendQuery(job: Job<string>) {
     const con = await this.masterDatabaseService.getConnection();
     try {
-      console.log(await this.queue.getJobCounts());
       const sql: string = job.data;
       await con.query(sql);
-      console.log('Success to send query \n', sql);
-      console.log('Job Counts', await this.queue.getJobCounts());
     } catch (error) {
       throw error;
     } finally {
