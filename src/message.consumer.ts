@@ -1,4 +1,5 @@
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
+import { Logger } from '@nestjs/common';
 import { Job, Queue } from 'bull';
 import { MasterDatabaseService } from './database/master.database.service';
 
@@ -15,6 +16,7 @@ export class MessageConsumer {
       const sql: string = job.data;
       await con.query(sql);
     } catch (error) {
+      Logger.debug(error);
       throw error;
     } finally {
       con.release();
@@ -34,6 +36,7 @@ export class MessageConsumer {
       con.commit();
       console.log('Job Counts', await this.queue.getJobCounts());
     } catch (error) {
+      Logger.debug(error);
       throw error;
     } finally {
       con.release();
