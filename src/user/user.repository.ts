@@ -30,14 +30,10 @@ export class UserRepository {
       const email: string = createUserDto.email;
       const password: string = createUserDto.password;
       const role: number = createUserDto.role;
-      // await this.queue.add(
-      //   'send-query',
-      //   `INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', ${role});`
-      // );
-      console.log(createUserDto);
-      await this.masterDatabaseService.query(`
-      INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', '${role}');
-      `);
+      await this.queue.add(
+        'send-query',
+        `INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', '${role}');`
+      );
       return true;
     } catch (error) {
       throw error;

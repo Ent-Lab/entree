@@ -15,11 +15,13 @@ export class MessageConsumer {
     try {
       const sql: string = job.data;
       await con.query(sql);
+      Logger.log(sql, 'SUCCESS');
     } catch (error) {
       Logger.debug(error);
       throw error;
     } finally {
       con.release();
+      Logger.log('CONNECTION RELEASE', 'SUCCESS');
     }
   }
 
@@ -28,18 +30,20 @@ export class MessageConsumer {
     const con = await this.masterDatabaseService.getConnection();
     try {
       await con.beginTransaction();
+      Logger.log('BEGIN TRANSACTION', 'SUCCESS');
       for (const i in jobs) {
         const sql = jobs[i].data;
         await con.query(sql);
-        console.log(sql);
+        Logger.log(sql, 'SUCCESS SEND QUERY');
       }
       con.commit();
-      console.log('Job Counts', await this.queue.getJobCounts());
+      Logger.log('COMMIT TRANSACTION', 'SUCCESS');
     } catch (error) {
       Logger.debug(error);
       throw error;
     } finally {
       con.release();
+      Logger.log('CONNECTION RELEASE', 'SUCCESS');
     }
   }
 }

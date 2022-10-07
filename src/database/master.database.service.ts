@@ -34,7 +34,7 @@ export class MasterDatabaseService implements DatabaseService {
   async getConnection(): Promise<PoolConnection> {
     try {
       const conn = await this.pool.getConnection();
-      Logger.log('Get connection', 'Promise pool');
+      Logger.log('Get Pool connection', 'SUCCESS');
       return conn;
     } catch (error) {
       throw error;
