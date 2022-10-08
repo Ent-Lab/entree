@@ -10,7 +10,7 @@ import { UsefulService } from 'src/useful/useful.service';
 import { BullModule } from '@nestjs/bull';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -28,7 +28,7 @@ import { DatabaseService } from 'src/database/database.service';
     }),
     BullModule.forRoot({
       redis: {
-        host: '43.201.8.8',
+        host: '54.180.96.37',
         port: 6379,
       },
     }),

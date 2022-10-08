@@ -21,7 +21,7 @@ import { DatabaseService } from 'src/database/database.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     BullModule.forRoot({
       redis: {
-        host: '43.201.8.8',
+        host: '54.180.96.37',
         port: 6379,
       },
     }),

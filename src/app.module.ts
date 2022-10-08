@@ -35,7 +35,7 @@ Logger.debug(ENV);
     UsefulModule,
     BullModule.forRoot({
       redis: {
-        host: '43.201.8.8',
+        host: '54.180.96.37',
         port: 6379,
       },
     }),

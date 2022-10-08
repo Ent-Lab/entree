@@ -76,14 +76,24 @@ export class UserService {
       throw new ConflictException('이미 존재하는 이메일입니다.');
     }
   }
+  /**
+   *  토큰 검증
+   * @param token
+   * @returns
+   */
+  async verifyToken(token: string): Promise<any> {
+    return this.jwtService.verify(token);
+  }
 
   /**
    * 비밀번호 암호화
    * @param createUserDto
    */
-  async hashPassword(createUserDto: CreateUserDto): Promise<void> {
-    const salt: string = await bcrypt.genSalt();
-    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+  async hashPassword(userDto: CreateUserDto | UpdateUserDto): Promise<void> {
+    if (userDto.password) {
+      const salt: string = await bcrypt.genSalt();
+      userDto.password = await bcrypt.hash(userDto.password, salt);
+    }
   }
 
   /**
@@ -100,12 +110,12 @@ export class UserService {
 
   /**
    * 유저 ID로 조회
-   * @param code
+   * @param id
    * @returns 유저
    */
-  async findOne(code: string) {
+  async findOne(id: number) {
     try {
-      return this.userRepository.selectOneByCode(code);
+      return this.userRepository.selectOneByCode(id);
     } catch (error) {
       throw error;
     }
@@ -125,8 +135,9 @@ export class UserService {
    * @param updateUserDto
    * @returns true
    */
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     try {
+      await this.hashPassword(updateUserDto);
       return this.userRepository.updateOneById(id, updateUserDto);
     } catch (error) {
       throw error;

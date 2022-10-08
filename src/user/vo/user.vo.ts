@@ -1,6 +1,9 @@
 import { IsString, IsEmail, IsNumber, IsDate } from 'class-validator';
 
 export class UserVo {
+  @IsNumber()
+  id: number;
+
   @IsString()
   code: string;
 
@@ -13,8 +16,8 @@ export class UserVo {
   @IsString()
   password: string;
 
-  @IsNumber()
-  role: number;
+  @IsString()
+  role: string;
 
   @IsDate()
   created_time: Date;

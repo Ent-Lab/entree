@@ -29,7 +29,7 @@ export class UserRepository {
       const login_type: string = createUserDto.login_type;
       const email: string = createUserDto.email;
       const password: string = createUserDto.password;
-      const role: number = createUserDto.role;
+      const role: string = createUserDto.role;
       await this.databaseService.query(
         `INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', '${role}');`,
         'w'
@@ -64,13 +64,13 @@ export class UserRepository {
    * @param code
    * @returns 유저
    */
-  async selectOneByCode(code: string): Promise<GetUserDto> {
+  async selectOneByCode(id: number): Promise<GetUserDto> {
     try {
       const userData = await this.databaseService.query(
         `
       SELECT *
       FROM user
-      WHERE code='${code}'
+      WHERE id=${id}
       ;
       `
       );
@@ -89,7 +89,7 @@ export class UserRepository {
     try {
       const userData = await this.databaseService.query(`
       SELECT 
-      id, code, login_type, email, password, created_time, updated_time FROM
+      id, code, login_type, email, password, role, created_time, updated_time FROM
       user
       WHERE
       email='${email}'
@@ -128,14 +128,14 @@ export class UserRepository {
         : selectForUpdate.login_type;
       const email = updateUserDto.email
         ? updateUserDto.email
-        : selectForUpdate.login_type;
+        : selectForUpdate.email;
       const password = updateUserDto.password
         ? updateUserDto.password
         : selectForUpdate.password;
       await con.query(`
         UPDATE user
         SET login_type='${login_type}', email='${email}', password='${password}'
-        WHERE id='${id}';
+        WHERE id=${id};
         `);
       con.commit();
       return true;
@@ -157,7 +157,7 @@ export class UserRepository {
         'send-query',
         `
       DELETE FROM user 
-      WHERE id='${id}';
+      WHERE id=${id};
       `
       );
       return true;
