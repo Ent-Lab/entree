@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { UserVo } from './vo/user.vo';
+import { GetUserDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UserService {
@@ -41,9 +42,9 @@ export class UserService {
   async login(loginDto: LoginDto): Promise<object> {
     try {
       const { email, password } = loginDto;
-      const userData = await this.findOneByEmail(email);
-      const user: UserVo = userData[0];
-      return this.validateUser(user, password);
+      const userData: boolean | GetUserDto = await this.findOneByEmail(email);
+      const user: GetUserDto = userData;
+      return this.validateUser(user, password); // 유효성 체크
     } catch (error) {
       throw error;
     }
@@ -55,7 +56,7 @@ export class UserService {
    * @param password
    * @returns
    */
-  async validateUser(user: UserVo, password: string): Promise<object> {
+  async validateUser(user: GetUserDto, password: string): Promise<object> {
     if (user && (await bcrypt.compare(password, user.password))) {
       const payload = { email: user.email };
       const token = this.jwtService.sign(payload);

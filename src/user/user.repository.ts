@@ -13,9 +13,6 @@ import { GetUserDto } from './dto/get-user.dto';
 @Injectable()
 export class UserRepository {
   constructor(
-    /**
-     * BULL 메시지 큐를 사용하여 DB에 비동기 프로세스로 접근합니다.
-     */
     @InjectQueue('message-queue') private queue: Queue,
     private readonly slaveDatabaseService: SlaveDatabaseService,
     private readonly masterDatabaseService: MasterDatabaseService,
@@ -67,7 +64,7 @@ export class UserRepository {
    * @param code
    * @returns 유저
    */
-  async selectOneByCode(code: string): Promise<GetUserDto | boolean> {
+  async selectOneByCode(code: string): Promise<GetUserDto> {
     try {
       const userData = await this.databaseService.query(
         `
@@ -88,7 +85,7 @@ export class UserRepository {
    * @param email
    * @returns 이메일
    */
-  async selectOneByEmail(email: string): Promise<GetUserDto | boolean> {
+  async selectOneByEmail(email: string): Promise<GetUserDto> {
     try {
       const userData = await this.databaseService.query(`
       SELECT 

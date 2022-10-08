@@ -51,7 +51,7 @@ export class DatabaseService {
       for (const i in row) {
         rowArray.push(row[i]);
       }
-      if (rowArray.length === 0) {
+      if (option === 'r' && rowArray.length === 0) {
         throw new NotFoundException("data doesn't exist.");
       }
       return rowArray;
