@@ -10,6 +10,7 @@ import * as Joi from 'joi';
 import { MessageConsumer } from './message.consumer';
 import { MasterDatabaseService } from './database/master.database.service';
 import { PostModule } from './post/post.module';
+import { DatabaseService } from './database/database.service';
 
 const ENV = process.env.NODE_ENV;
 Logger.debug(ENV);
@@ -44,6 +45,11 @@ Logger.debug(ENV);
     PostModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MessageConsumer, MasterDatabaseService],
+  providers: [
+    AppService,
+    MessageConsumer,
+    MasterDatabaseService,
+    DatabaseService,
+  ],
 })
 export class AppModule {}

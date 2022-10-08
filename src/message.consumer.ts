@@ -1,49 +1,34 @@
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job, Queue } from 'bull';
+import { DatabaseService } from './database/database.service';
 import { MasterDatabaseService } from './database/master.database.service';
 
 @Processor('message-queue')
 export class MessageConsumer {
   constructor(
     @InjectQueue('message-queue') private queue: Queue,
-    private readonly masterDatabaseService: MasterDatabaseService
+    private readonly masterDatabaseService: MasterDatabaseService,
+    private readonly databaseService: DatabaseService
   ) {}
   @Process('send-query')
   async sendQuery(job: Job<string>) {
-    const con = await this.masterDatabaseService.getConnection();
     try {
-      const sql: string = job.data;
-      await con.query(sql);
-      Logger.log(sql, 'SUCCESS');
+      const sql = job.data;
+      await this.databaseService.query(sql, 'w');
     } catch (error) {
       Logger.debug(error);
-      throw error;
-    } finally {
-      con.release();
-      Logger.log('CONNECTION RELEASE', 'SUCCESS');
     }
   }
 
   @Process('send-transaction')
-  async sendTransaction(jobs: Job<string>[]) {
-    const con = await this.masterDatabaseService.getConnection();
+  async sendTransaction(job: Job<string[]>) {
     try {
-      await con.beginTransaction();
-      Logger.log('BEGIN TRANSACTION', 'SUCCESS');
-      for (const i in jobs) {
-        const sql = jobs[i].data;
-        await con.query(sql);
-        Logger.log(sql, 'SUCCESS SEND QUERY');
-      }
-      con.commit();
-      Logger.log('COMMIT TRANSACTION', 'SUCCESS');
+      const sqls: string[] = job.data;
+      await this.databaseService.transaction(sqls);
+      return true;
     } catch (error) {
       Logger.debug(error);
-      throw error;
-    } finally {
-      con.release();
-      Logger.log('CONNECTION RELEASE', 'SUCCESS');
     }
   }
 }
