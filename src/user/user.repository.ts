@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { DatabaseService } from 'src/database/database.service';
 /**
  * 유저 레포지토리입니다.
  */
@@ -16,7 +17,8 @@ export class UserRepository {
      */
     @InjectQueue('message-queue') private queue: Queue,
     private readonly slaveDatabaseService: SlaveDatabaseService,
-    private readonly masterDatabaseService: MasterDatabaseService
+    private readonly masterDatabaseService: MasterDatabaseService,
+    private readonly databaseService: DatabaseService
   ) {}
   /**
    * 유저 생성 쿼리
@@ -58,22 +60,17 @@ export class UserRepository {
 
   /**
    * 유저 Id로 조회
-   * @param id
+   * @param code
    * @returns 유저
    */
-  async selectOneById(id: number): Promise<object | boolean> {
+  async selectOneByCode(code: string): Promise<object | boolean> {
     try {
-      const userData = await this.slaveDatabaseService.query(`
-      SELECT 
-      id, code, login_type, email, password, created_time, updated_time FROM
-      user
-      WHERE
-      id=${id}
+      const userData = await this.databaseService.query(`
+      SELECT *
+      FROM user
+      WHERE code='${code}'
       ;
       `);
-      if (userData.length === 0) {
-        return false;
-      }
       return userData[0];
     } catch (error) {
       throw error;

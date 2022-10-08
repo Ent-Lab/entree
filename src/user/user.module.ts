@@ -12,6 +12,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DatabaseService } from 'src/database/database.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UserRepository,
     MasterDatabaseService,
     SlaveDatabaseService,
+    DatabaseService,
     UsefulService,
     JwtStrategy,
   ],

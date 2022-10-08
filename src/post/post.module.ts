@@ -11,6 +11,7 @@ import { UsefulService } from 'src/useful/useful.service';
 import { PostRepository } from './post.repository';
 import { PassportModule } from '@nestjs/passport';
 import { UserRepository } from 'src/user/user.repository';
+import { DatabaseService } from 'src/database/database.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserRepository } from 'src/user/user.repository';
     PostService,
     MasterDatabaseService,
     SlaveDatabaseService,
+    DatabaseService,
     UsefulService,
     PostRepository,
     UserRepository,

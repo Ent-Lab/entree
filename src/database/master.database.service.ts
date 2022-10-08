@@ -9,10 +9,9 @@ import {
   RowDataPacket,
 } from 'mysql2/promise';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseService } from './database.interface';
 
 @Injectable()
-export class MasterDatabaseService implements DatabaseService {
+export class MasterDatabaseService {
   private pool: Pool;
   constructor(private readonly configService: ConfigService) {
     try {
