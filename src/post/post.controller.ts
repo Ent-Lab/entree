@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -14,6 +15,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUserDto } from 'src/user/dto/get-user.dto';
 import { GetUser } from 'src/custom.decorator';
+import { GetPostDto } from './dto/get-post.dto';
 
 @Controller('post')
 export class PostController {
@@ -43,8 +45,17 @@ export class PostController {
   }
 
   @Patch(':code')
-  update(@Param('code') code: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(code, updatePostDto);
+  @UseGuards(AuthGuard())
+  async update(
+    @GetUser() user: GetUserDto,
+    @Param('code') code: string,
+    @Body() updatePostDto: UpdatePostDto
+  ) {
+    try {
+      return this.postService.update(user.code, code, updatePostDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':code')

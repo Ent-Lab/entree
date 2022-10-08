@@ -3,6 +3,8 @@ import { Queue } from 'bull';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { GetPostDto } from './dto/get-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostRepository {
@@ -29,7 +31,7 @@ export class PostRepository {
     }
   }
 
-  async selectAll() {
+  async selectAll(): Promise<any[]> {
     try {
       return this.slaveDatabaseService.query(`
         select * from post;
@@ -39,38 +41,49 @@ export class PostRepository {
     }
   }
 
-  async selectByCode(code: string) {
+  async selectByCode(code: string): Promise<any> {
     try {
-      return this.slaveDatabaseService.query(`
+      const row = await this.slaveDatabaseService.query(`
         select * from post where code = '${code}';
         `);
+      return row[0];
     } catch (error) {
       throw error;
     }
   }
 
-  async selectByUser(userCode: string) {
+  async selectByUser(userCode: string): Promise<any> {
     try {
-      return this.slaveDatabaseService.query(`
+      const row = this.slaveDatabaseService.query(`
         select * from post where fk_user_code = '${userCode}';
         `);
+      return row[0];
     } catch (error) {
       throw error;
     }
   }
 
-  async selectByTitle(title: string) {
+  async selectByTitle(title: string): Promise<any> {
     try {
-      return this.slaveDatabaseService.query(`
+      const row = await this.slaveDatabaseService.query(`
         select * from post where title like '%${title}%';
         `);
+      return row[0];
     } catch (error) {
       throw error;
     }
   }
 
-  async update() {
+  async update(code: string, updatePostDto: UpdatePostDto) {
     try {
+      this.queue.add(
+        'send-query',
+        `
+        UPDATE post
+        SET (title='${updatePostDto.title}', contents='${updatePostDto.contents}')
+        WHERE code='${code}';
+        `
+      );
     } catch (error) {
       throw error;
     }

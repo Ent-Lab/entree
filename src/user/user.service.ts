@@ -99,12 +99,12 @@ export class UserService {
 
   /**
    * 유저 ID로 조회
-   * @param id
+   * @param code
    * @returns 유저
    */
-  async findOne(id: number) {
+  async findOne(code: string) {
     try {
-      return this.userRepository.selectOneById(id);
+      return this.userRepository.selectOneByCode(code);
     } catch (error) {
       throw error;
     }

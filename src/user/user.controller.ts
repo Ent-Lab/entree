@@ -54,10 +54,10 @@ export class UserController {
     }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<boolean | object> {
+  @Get(':code')
+  findOne(@Param('code') code: string): Promise<boolean | object> {
     try {
-      return this.userService.findOne(+id);
+      return this.userService.findOne(code);
     } catch (error) {
       throw error;
     }

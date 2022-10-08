@@ -9,10 +9,9 @@ import {
   RowDataPacket,
 } from 'mysql2/promise';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseService } from './database.interface';
 
 @Injectable()
-export class MasterDatabaseService implements DatabaseService {
+export class MasterDatabaseService {
   private pool: Pool;
   constructor(private readonly configService: ConfigService) {
     try {
@@ -34,7 +33,7 @@ export class MasterDatabaseService implements DatabaseService {
   async getConnection(): Promise<PoolConnection> {
     try {
       const conn = await this.pool.getConnection();
-      Logger.log('Get connection', 'Promise pool');
+      Logger.log('Get Pool connection', 'SUCCESS');
       return conn;
     } catch (error) {
       throw error;
