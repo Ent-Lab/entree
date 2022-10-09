@@ -1,9 +1,9 @@
-import { PickType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
 import { UserVo } from '../vo/user.vo';
 
-export class LoginDto extends UserVo {
+export class LoginDto extends PartialType(UserVo) {
   @ApiProperty({ description: 'User email', example: 'test1234@naver.com' })
   @IsEmail()
   email: string;

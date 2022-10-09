@@ -19,7 +19,7 @@ async function bootstrap() {
     ENTREE API SWAGGER 문서입니다. 
     Try out 기능을 활용해 실제 API를 사용할 수 있으며 token을 넣으면 인증/인가 기능도 활용 가능합니다. 
     실패 케이스에 대한 응답 예시는 추후 추가 예정입니다. 
-    
+
     `
     )
     .setVersion('1.0')
@@ -33,7 +33,7 @@ async function bootstrap() {
       },
       'token'
     )
-    .addTag('ImMall')
+    .addTag('Entree')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
