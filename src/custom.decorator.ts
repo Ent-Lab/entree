@@ -19,7 +19,6 @@ export const GetUser = createParamDecorator(
 export const GetAdmin = createParamDecorator(
   (data, ctx: ExecutionContext): GetUserDto => {
     const req = ctx.switchToHttp().getRequest();
-    console.log(req.user);
     if (req.user.role === 'admin') return req.user;
     else throw new UnauthorizedException('관리자만 접근 가능합니다.');
   }

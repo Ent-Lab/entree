@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
@@ -14,7 +14,6 @@ import { GetUserDto } from './dto/get-user.dto';
 export class UserRepository {
   constructor(
     @InjectQueue('message-queue') private queue: Queue,
-    private readonly slaveDatabaseService: SlaveDatabaseService,
     private readonly masterDatabaseService: MasterDatabaseService,
     private readonly databaseService: DatabaseService
   ) {}
@@ -153,8 +152,7 @@ export class UserRepository {
    */
   async deleteOneById(id: number): Promise<boolean> {
     try {
-      await this.queue.add(
-        'send-query',
+      await this.databaseService.query(
         `
       DELETE FROM user 
       WHERE id=${id};

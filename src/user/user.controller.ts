@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,8 +16,6 @@ import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetAdmin, GetUser, Roles } from 'src/custom.decorator';
 import { GetUserDto } from './dto/get-user.dto';
-import { Role } from '../auth/roles.enum';
-import { RolesGuard } from 'src/auth/guards/role.guard';
 
 @Controller('user')
 export class UserController {
@@ -93,7 +90,7 @@ export class UserController {
   @UseGuards(AuthGuard())
   remove(
     @GetUser() user: GetUserDto,
-    @Param('id') id: string
+    @Param('id') id: number
   ): Promise<boolean> {
     try {
       return this.userService.remove(+id);

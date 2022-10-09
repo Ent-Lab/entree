@@ -4,7 +4,7 @@ import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { DatabaseModule } from 'src/database/database.module';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
+
 import { UsefulModule } from 'src/useful/useful.module';
 import { UsefulService } from 'src/useful/useful.service';
 import { BullModule } from '@nestjs/bull';
@@ -41,7 +41,6 @@ import { DatabaseService } from 'src/database/database.service';
     UserService,
     UserRepository,
     MasterDatabaseService,
-    SlaveDatabaseService,
     DatabaseService,
     UsefulService,
     JwtStrategy,

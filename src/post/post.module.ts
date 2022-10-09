@@ -6,7 +6,6 @@ import { UsefulModule } from 'src/useful/useful.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { UsefulService } from 'src/useful/useful.service';
 import { PostRepository } from './post.repository';
 import { PassportModule } from '@nestjs/passport';
@@ -33,7 +32,6 @@ import { DatabaseService } from 'src/database/database.service';
   providers: [
     PostService,
     MasterDatabaseService,
-    SlaveDatabaseService,
     DatabaseService,
     UsefulService,
     PostRepository,

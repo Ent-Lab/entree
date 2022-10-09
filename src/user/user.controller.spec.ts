@@ -77,10 +77,6 @@ describe('UserController', () => {
       .spyOn(service, 'register')
       .mockImplementation(async (createUserDto: CreateUserDto) => {
         try {
-          console.log({
-            id: 1,
-            ...createUserDto,
-          });
           users.push({
             id: 1,
             ...createUserDto,

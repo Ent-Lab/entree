@@ -1,23 +1,21 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { GetPostDto } from './dto/get-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class PostRepository {
   constructor(
     @InjectQueue('message-queue') private queue: Queue,
-    private readonly slaveDatabaseService: SlaveDatabaseService
+    private readonly databaseService: DatabaseService
   ) {}
 
   async create(createPostDto: CreatePostDto) {
     try {
       const { code, title, contents, fk_user_code } = createPostDto;
-      await this.queue.add(
-        'send-query',
+      await this.databaseService.query(
         `
         INSERT INTO post
         (code, title, contents, fk_user_code)
@@ -33,19 +31,25 @@ export class PostRepository {
 
   async selectAll(): Promise<any[]> {
     try {
-      return this.slaveDatabaseService.query(`
+      return this.databaseService.query(
+        `
         select * from post;
-        `);
+        `,
+        'r'
+      );
     } catch (error) {
       throw error;
     }
   }
 
-  async selectByCode(code: string): Promise<any> {
+  async selectOne(id: number): Promise<any> {
     try {
-      const row = await this.slaveDatabaseService.query(`
-        select * from post where code = '${code}';
-        `);
+      const row = await this.databaseService.query(
+        `
+        select * from post where id = '${id}';
+        `,
+        'r'
+      );
       return row[0];
     } catch (error) {
       throw error;
@@ -54,9 +58,12 @@ export class PostRepository {
 
   async selectByUser(userCode: string): Promise<any> {
     try {
-      const row = this.slaveDatabaseService.query(`
+      const row = this.databaseService.query(
+        `
         select * from post where fk_user_code = '${userCode}';
-        `);
+        `,
+        'r'
+      );
       return row[0];
     } catch (error) {
       throw error;
@@ -65,31 +72,39 @@ export class PostRepository {
 
   async selectByTitle(title: string): Promise<any> {
     try {
-      const row = await this.slaveDatabaseService.query(`
+      const row = await this.databaseService.query(
+        `
         select * from post where title like '%${title}%';
-        `);
+        `,
+        'r'
+      );
       return row[0];
     } catch (error) {
       throw error;
     }
   }
 
-  async update(code: string, updatePostDto: UpdatePostDto) {
+  async update(id: number, updatePostDto: UpdatePostDto) {
     try {
-      this.queue.add(
-        'send-query',
+      await this.databaseService.query(
         `
         UPDATE post
         SET (title='${updatePostDto.title}', contents='${updatePostDto.contents}')
-        WHERE code='${code}';
+        WHERE id=${id};
         `
       );
+      return true;
     } catch (error) {
       throw error;
     }
   }
 
-  async delete() {
+  async delete(id: number) {
+    await this.databaseService.query(`
+    DELETE FROM post
+    WHERE id=${id};
+    `);
+    return true;
     try {
     } catch (error) {
       throw error;
