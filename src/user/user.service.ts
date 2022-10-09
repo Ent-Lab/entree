@@ -9,8 +9,8 @@ import { UserRepository } from './user.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
-import { UserVo } from './vo/user.vo';
 import { GetUserDto } from './dto/get-user.dto';
+import { TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class UserService {
@@ -39,7 +39,7 @@ export class UserService {
    * 로그인
    * @param loginDto
    */
-  async login(loginDto: LoginDto): Promise<object> {
+  async login(loginDto: LoginDto): Promise<TokenDto> {
     try {
       const { email, password } = loginDto;
       const userData: boolean | GetUserDto = await this.findOneByEmail(email);
@@ -56,11 +56,12 @@ export class UserService {
    * @param password
    * @returns
    */
-  async validateUser(user: GetUserDto, password: string): Promise<object> {
+  async validateUser(user: GetUserDto, password: string): Promise<TokenDto> {
     if (user && (await bcrypt.compare(password, user.password))) {
       const payload = { email: user.email };
       const token = this.jwtService.sign(payload);
-      return { token, expiresIn: '1h' };
+      const tokenDto: TokenDto = { token, expiredIn: '1h' };
+      return tokenDto;
     } else {
       throw new UnauthorizedException('잘못된 이메일 또는 비밀번호 입니다.');
     }
