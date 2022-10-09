@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { UserVo } from './vo/user.vo';
+import { GetUserDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UserService {
@@ -41,9 +42,9 @@ export class UserService {
   async login(loginDto: LoginDto): Promise<object> {
     try {
       const { email, password } = loginDto;
-      const userData = await this.findOneByEmail(email);
-      const user: UserVo = userData[0];
-      return this.validateUser(user, password);
+      const userData: boolean | GetUserDto = await this.findOneByEmail(email);
+      const user: GetUserDto = userData;
+      return this.validateUser(user, password); // 유효성 체크
     } catch (error) {
       throw error;
     }
@@ -55,7 +56,7 @@ export class UserService {
    * @param password
    * @returns
    */
-  async validateUser(user: UserVo, password: string): Promise<object> {
+  async validateUser(user: GetUserDto, password: string): Promise<object> {
     if (user && (await bcrypt.compare(password, user.password))) {
       const payload = { email: user.email };
       const token = this.jwtService.sign(payload);
@@ -75,14 +76,24 @@ export class UserService {
       throw new ConflictException('이미 존재하는 이메일입니다.');
     }
   }
+  /**
+   *  토큰 검증
+   * @param token
+   * @returns
+   */
+  async verifyToken(token: string): Promise<any> {
+    return this.jwtService.verify(token);
+  }
 
   /**
    * 비밀번호 암호화
    * @param createUserDto
    */
-  async hashPassword(createUserDto: CreateUserDto): Promise<void> {
-    const salt: string = await bcrypt.genSalt();
-    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+  async hashPassword(userDto: CreateUserDto | UpdateUserDto): Promise<void> {
+    if (userDto.password) {
+      const salt: string = await bcrypt.genSalt();
+      userDto.password = await bcrypt.hash(userDto.password, salt);
+    }
   }
 
   /**
@@ -99,12 +110,12 @@ export class UserService {
 
   /**
    * 유저 ID로 조회
-   * @param code
+   * @param id
    * @returns 유저
    */
-  async findOne(code: string) {
+  async findOne(id: number) {
     try {
-      return this.userRepository.selectOneByCode(code);
+      return this.userRepository.selectOneByCode(id);
     } catch (error) {
       throw error;
     }
@@ -124,8 +135,9 @@ export class UserService {
    * @param updateUserDto
    * @returns true
    */
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     try {
+      await this.hashPassword(updateUserDto);
       return this.userRepository.updateOneById(id, updateUserDto);
     } catch (error) {
       throw error;

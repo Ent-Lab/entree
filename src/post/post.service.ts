@@ -29,9 +29,9 @@ export class PostService {
     }
   }
 
-  async findOne(code: string): Promise<GetPostDto> {
+  async findOne(id: number): Promise<GetPostDto> {
     try {
-      return this.postRepository.selectByCode(code);
+      return this.postRepository.selectOne(id);
     } catch (error) {
       throw error;
     }
@@ -45,9 +45,9 @@ export class PostService {
     }
   }
 
-  async update(userCode: string, code: string, updatePostDto: UpdatePostDto) {
+  async update(userCode: string, id: number, updatePostDto: UpdatePostDto) {
     try {
-      const post: GetPostDto = await this.postRepository.selectByCode(code);
+      const post: GetPostDto = await this.postRepository.selectOne(id);
       if (post.fk_user_code !== userCode) {
         throw new ForbiddenException('자신의 정보만 수정할 수 있습니다.');
       }
@@ -57,13 +57,13 @@ export class PostService {
       updatePostDto.contents = updatePostDto.contents
         ? updatePostDto.contents
         : post.contents;
-      return this.postRepository.update(code, updatePostDto);
+      return this.postRepository.update(id, updatePostDto);
     } catch (error) {
       throw error;
     }
   }
 
-  remove(code: string) {
-    return `This action removes a #${code} post`;
+  remove(id: number) {
+    return this.postRepository.delete(id);
   }
 }

@@ -11,7 +11,7 @@ import { UsefulModule } from 'src/useful/useful.module';
 import { UsefulService } from 'src/useful/useful.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { UserController } from './user.controller';
 import { UserModule } from './user.module';
 import { UserRepository } from './user.repository';
@@ -48,7 +48,7 @@ describe('UserController', () => {
         }),
         BullModule.forRoot({
           redis: {
-            host: '43.201.8.8',
+            host: '54.180.96.37',
             port: 6379,
           },
         }),
@@ -77,10 +77,6 @@ describe('UserController', () => {
       .spyOn(service, 'register')
       .mockImplementation(async (createUserDto: CreateUserDto) => {
         try {
-          console.log({
-            id: 1,
-            ...createUserDto,
-          });
           users.push({
             id: 1,
             ...createUserDto,

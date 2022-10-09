@@ -15,7 +15,6 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUserDto } from 'src/user/dto/get-user.dto';
 import { GetUser } from 'src/custom.decorator';
-import { GetPostDto } from './dto/get-post.dto';
 
 @Controller('post')
 export class PostController {
@@ -33,33 +32,32 @@ export class PostController {
     return this.postService.findAll();
   }
 
-  @Get(':code')
-  findOne(@Param('code') code: string) {
-    return this.postService.findOne(code);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.postService.findOne(+id);
   }
 
   @Get(':user')
   findByUser(@GetUser() user: GetUserDto) {
-    console.log(user);
     return this.postService.findByUser(user.code);
   }
 
-  @Patch(':code')
+  @Patch(':id')
   @UseGuards(AuthGuard())
   async update(
     @GetUser() user: GetUserDto,
-    @Param('code') code: string,
+    @Param('id') id: number,
     @Body() updatePostDto: UpdatePostDto
   ) {
     try {
-      return this.postService.update(user.code, code, updatePostDto);
+      return this.postService.update(user.code, id, updatePostDto);
     } catch (error) {
       throw error;
     }
   }
 
-  @Delete(':code')
-  remove(@Param('code') code: string) {
-    return this.postService.remove(code);
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.postService.remove(+id);
   }
 }

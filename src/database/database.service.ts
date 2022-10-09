@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createPool, Pool } from 'mysql2/promise';
+import { createPool, Pool, PoolConnection } from 'mysql2/promise';
 
 @Injectable()
 export class DatabaseService {
@@ -31,19 +31,54 @@ export class DatabaseService {
       throw error;
     }
   }
+
+  async getConnection(option?: string): Promise<PoolConnection> {
+    try {
+      if (option === 'r') {
+        return this.slavePool.getConnection();
+      }
+      return this.masterPool.getConnection();
+    } catch (error) {
+      throw error;
+    }
+  }
   // Single Query
   async query(sql: string, option?: string) {
-    const conn =
-      option === 'w'
-        ? await this.masterPool.getConnection()
-        : await this.slavePool.getConnection();
+    const conn = await this.getConnection(option);
     try {
+      const rowArray: Array<any> = [];
       const [row, fields] = await conn.query(sql);
-      return row;
+      for (const i in row) {
+        rowArray.push(row[i]);
+      }
+      if (option === 'r' && rowArray.length === 0) {
+        throw new NotFoundException("data doesn't exist.");
+      }
+      return rowArray;
     } catch (error) {
       throw error;
     } finally {
-      conn.commit();
+      conn.release();
+    }
+  }
+
+  //Transaction
+  async transaction(sqls: string[]) {
+    const conn = await this.getConnection('w');
+    try {
+      await conn.beginTransaction();
+      sqls.forEach(async (sql) => {
+        const [row, fields] = await conn.query(sql);
+        Logger.log(row);
+      });
+      await conn.commit();
+      Logger.log('COMMIT TRANSACTION', 'SUCCESS');
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+      Logger.log('CONNECTION RELEASE', 'SUCCESS');
     }
   }
 }

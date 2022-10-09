@@ -6,12 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsefulService } from 'src/useful/useful.service';
 import { LoginDto } from './dto/login.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { GetAdmin, GetUser, Roles } from 'src/custom.decorator';
+import { GetUserDto } from './dto/get-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -46,7 +50,8 @@ export class UserController {
   }
 
   @Get()
-  findAll(): Promise<object[]> {
+  @UseGuards(AuthGuard())
+  findAll(@GetAdmin() admin: GetUserDto): Promise<object[]> {
     try {
       return this.userService.findAll();
     } catch (error) {
@@ -54,17 +59,23 @@ export class UserController {
     }
   }
 
-  @Get(':code')
-  findOne(@Param('code') code: string): Promise<boolean | object> {
+  @Get(':id')
+  @UseGuards(AuthGuard())
+  findOne(
+    @GetAdmin() admin: GetUserDto,
+    @Param('id') id: string
+  ): Promise<boolean | object> {
     try {
-      return this.userService.findOne(code);
+      return this.userService.findOne(+id);
     } catch (error) {
       throw error;
     }
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard())
   update(
+    @GetUser() user: GetUserDto,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
   ): Promise<boolean> {
@@ -76,7 +87,11 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<boolean> {
+  @UseGuards(AuthGuard())
+  remove(
+    @GetUser() user: GetUserDto,
+    @Param('id') id: number
+  ): Promise<boolean> {
     try {
       return this.userService.remove(+id);
     } catch (error) {

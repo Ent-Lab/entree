@@ -4,13 +4,13 @@ import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { DatabaseModule } from 'src/database/database.module';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
+
 import { UsefulModule } from 'src/useful/useful.module';
 import { UsefulService } from 'src/useful/useful.service';
 import { BullModule } from '@nestjs/bull';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -28,7 +28,7 @@ import { DatabaseService } from 'src/database/database.service';
     }),
     BullModule.forRoot({
       redis: {
-        host: '43.201.8.8',
+        host: '54.180.96.37',
         port: 6379,
       },
     }),
@@ -41,7 +41,6 @@ import { DatabaseService } from 'src/database/database.service';
     UserService,
     UserRepository,
     MasterDatabaseService,
-    SlaveDatabaseService,
     DatabaseService,
     UsefulService,
     JwtStrategy,

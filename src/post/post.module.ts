@@ -6,7 +6,6 @@ import { UsefulModule } from 'src/useful/useful.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { UsefulService } from 'src/useful/useful.service';
 import { PostRepository } from './post.repository';
 import { PassportModule } from '@nestjs/passport';
@@ -21,7 +20,7 @@ import { DatabaseService } from 'src/database/database.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     BullModule.forRoot({
       redis: {
-        host: '43.201.8.8',
+        host: '54.180.96.37',
         port: 6379,
       },
     }),
@@ -33,7 +32,6 @@ import { DatabaseService } from 'src/database/database.service';
   providers: [
     PostService,
     MasterDatabaseService,
-    SlaveDatabaseService,
     DatabaseService,
     UsefulService,
     PostRepository,
