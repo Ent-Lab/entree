@@ -4,6 +4,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostRepository } from './post.repository';
 import { UsefulService } from '../useful/useful.service';
 import { GetPostDto } from './dto/get-post.dto';
+import { RequestCreatePostDto } from './dto/request-create.post.dto';
 
 @Injectable()
 export class PostService {
@@ -12,18 +13,33 @@ export class PostService {
     private readonly userfulService: UsefulService
   ) {}
 
-  async create(createPostDto: CreatePostDto) {
+  async create(userCode: string, requestCreatePostDto: RequestCreatePostDto) {
     try {
-      createPostDto.code = await this.userfulService.genCode();
+      const code = await this.userfulService.genCode();
+      const { title, contents } = requestCreatePostDto;
+      const fk_user_code = userCode;
+      const createPostDto: CreatePostDto = {
+        code,
+        title,
+        contents,
+        fk_user_code,
+      };
       return this.postRepository.create(createPostDto);
     } catch (error) {
       throw error;
     }
   }
-
   async findAll() {
     try {
       return this.postRepository.selectAll();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findList(page: number, perPage: number) {
+    try {
+      return this.postRepository.selectList(page, perPage);
     } catch (error) {
       throw error;
     }

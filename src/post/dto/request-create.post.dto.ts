@@ -1,14 +1,8 @@
-import { PickType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { PostVo } from '../vo/post.vo';
 
-export class CreatePostDto extends PickType(PostVo, [
-  'code',
-  'contents',
-  'fk_user_code',
-  'title',
-]) {
+export class RequestCreatePostDto extends PostVo {
   @ApiProperty({ description: 'Post contents', example: '게시물 내용입니다. ' })
   @IsString()
   contents: string;
