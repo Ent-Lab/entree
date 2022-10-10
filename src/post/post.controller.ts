@@ -18,6 +18,7 @@ import { GetUserDto } from 'src/user/dto/get-user.dto';
 import { GetUser } from 'src/custom.decorator';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequestCreatePostDto } from './dto/request-create.post.dto';
+import { GetPostDto } from './dto/get-post.dto';
 
 @ApiTags('게시물 API')
 @Controller('post')
@@ -52,11 +53,7 @@ export class PostController {
   @ApiCreatedResponse({
     status: 201,
     description: '게시물 목록 조회 완료, 페이지별 조회 가능',
-    schema: {
-      example: {
-        success: true,
-      },
-    },
+    type: Array<GetPostDto>,
   })
   findAll(@Query('page') page?: number, @Query('perPage') perPage?: number) {
     if (!page) {
@@ -73,11 +70,7 @@ export class PostController {
   @ApiCreatedResponse({
     status: 201,
     description: '게시물 조회 완료',
-    schema: {
-      example: {
-        success: true,
-      },
-    },
+    type: GetPostDto,
   })
   findOne(@Param('id') id: string) {
     return this.postService.findOne(+id);
