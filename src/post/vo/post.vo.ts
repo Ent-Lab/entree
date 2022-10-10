@@ -1,6 +1,9 @@
 import { IsString, IsEmail, IsNumber, IsDate } from 'class-validator';
 
 export class PostVo {
+  @IsNumber()
+  id: number;
+
   @IsString()
   code: string;
 

@@ -15,6 +15,7 @@ export class PostRepository {
   async create(createPostDto: CreatePostDto) {
     try {
       const { code, title, contents, fk_user_code } = createPostDto;
+      console.log(createPostDto);
       await this.databaseService.query(
         `
         INSERT INTO post
@@ -29,11 +30,27 @@ export class PostRepository {
     }
   }
 
-  async selectAll(): Promise<any[]> {
+  async selectAll() {
     try {
       return this.databaseService.query(
         `
-        select * from post;
+      SELECT * FROM post;
+      `,
+        'r'
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async selectList(page: number, perPage: number): Promise<any[]> {
+    try {
+      //
+      const startPoint = (page - 1) * perPage;
+      const endPoint = perPage;
+      return this.databaseService.query(
+        `
+        select * from post LIMIT ${startPoint}, ${endPoint};
         `,
         'r'
       );
