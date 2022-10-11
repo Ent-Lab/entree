@@ -90,7 +90,7 @@ export class UserController {
 
   @Get()
   @ApiOperation({
-    summary: '유저 전체 조회 API(admin 유저만 접근 가능)',
+    summary: '유저 전체 조회 API(관리자)',
   })
   @ApiCreatedResponse({
     status: 200,
@@ -108,9 +108,8 @@ export class UserController {
   }
 
   @Get(':id')
-  @Get()
   @ApiOperation({
-    summary: '유저 단일 조회 API(admin 유저만 접근 가능)',
+    summary: '유저 단일 조회 API(관리자)',
   })
   @ApiCreatedResponse({
     status: 200,
@@ -129,9 +128,27 @@ export class UserController {
     }
   }
 
-  @Patch(':id')
+  @Get('info')
+  @UseGuards(AuthGuard())
   @ApiOperation({
-    summary: '유저 정보 수정 API(자기 정보만 접근 가능)',
+    summary: '내 정보 조회 API',
+  })
+  @ApiCreatedResponse({
+    status: 200,
+    description: '내 정보 조회 완료',
+  })
+  @ApiBearerAuth('token')
+  async findMyInfo(@GetUser() user: GetUserDto) {
+    try {
+      return this.userService.findOne(user.id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Patch()
+  @ApiOperation({
+    summary: '내 정보 수정 API',
   })
   @ApiCreatedResponse({
     status: 201,
@@ -146,7 +163,33 @@ export class UserController {
   @UseGuards(AuthGuard())
   update(
     @GetUser() user: GetUserDto,
-    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto
+  ): Promise<boolean> {
+    try {
+      return this.userService.update(user.id, updateUserDto);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: '유저 정보 수정 API(관리자)',
+  })
+  @ApiCreatedResponse({
+    status: 201,
+    description: '유저 정보 수정 완료',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
+  @ApiBearerAuth('token')
+  @UseGuards(AuthGuard())
+  updateOne(
+    @GetAdmin() admin: GetUserDto,
+    @Param() id: string,
     @Body() updateUserDto: UpdateUserDto
   ): Promise<boolean> {
     try {
@@ -156,7 +199,7 @@ export class UserController {
     }
   }
 
-  @Delete(':id')
+  @Delete()
   @ApiOperation({
     summary: '유저 탈퇴 API(자기 정보만 접근 가능)',
   })
@@ -171,9 +214,32 @@ export class UserController {
   })
   @ApiBearerAuth('token')
   @UseGuards(AuthGuard())
-  remove(
-    @GetUser() user: GetUserDto,
-    @Param('id') id: number
+  remove(@GetUser() user: GetUserDto): Promise<boolean> {
+    try {
+      return this.userService.remove(user.id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Delete(':id')
+  @ApiOperation({
+    summary: '유저 삭제 API(관리자)',
+  })
+  @ApiCreatedResponse({
+    status: 201,
+    description: '유저 탈퇴 완료',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
+  @ApiBearerAuth('token')
+  @UseGuards(AuthGuard())
+  removeOne(
+    @GetAdmin() admin: GetUserDto,
+    @Param() id: string
   ): Promise<boolean> {
     try {
       return this.userService.remove(+id);
