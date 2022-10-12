@@ -73,11 +73,11 @@ export class PostRepository {
     }
   }
 
-  async selectByUser(userCode: string): Promise<any> {
+  async selectByUser(userId: number): Promise<any> {
     try {
       const row = this.databaseService.query(
         `
-        select * from post where fk_user_code = '${userCode}';
+        select * from post where fk_user_id = '${userId}';
         `,
         'r'
       );

@@ -53,9 +53,9 @@ export class PostService {
     }
   }
 
-  async findByUser(userCode: string): Promise<GetPostDto> {
+  async findByUser(userId: number): Promise<GetPostDto> {
     try {
-      return this.postRepository.selectByUser(userCode);
+      return this.postRepository.selectByUser(userId);
     } catch (error) {
       throw error;
     }
