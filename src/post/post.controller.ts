@@ -77,12 +77,28 @@ export class PostController {
   }
 
   @Get(':user')
+  @ApiOperation({
+    summary: '유저별 게시물 목록 조회 API',
+  })
+  @ApiCreatedResponse({
+    status: 201,
+    description: '유저 게시물 목록 조회 완료',
+    type: GetPostDto,
+  })
   findByUser(@GetUser() user: GetUserDto) {
-    return this.postService.findByUser(user.code);
+    return this.postService.findByUser(+user.id);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard())
+  @ApiOperation({
+    summary: '게시물 업데이트 API',
+  })
+  @ApiCreatedResponse({
+    status: 201,
+    description: '게시물 업데이트 완료',
+    type: GetPostDto,
+  })
   async update(
     @GetUser() user: GetUserDto,
     @Param('id') id: number,

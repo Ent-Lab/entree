@@ -20,7 +20,6 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { RequestCreateUserDto } from './dto/request-create.user.dto';
