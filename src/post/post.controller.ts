@@ -112,6 +112,13 @@ export class PostController {
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: '게시물 삭제 API',
+  })
+  @ApiCreatedResponse({
+    status: 201,
+    description: '게시물 삭제 완료',
+  })
   remove(@Param('id') id: number) {
     return this.postService.remove(+id);
   }
