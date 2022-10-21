@@ -6,7 +6,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
 import { DatabaseModule } from 'src/database/database.module';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { UsefulModule } from 'src/useful/useful.module';
 import { UsefulService } from 'src/useful/useful.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -61,7 +60,6 @@ describe('UserController', () => {
         UserService,
         UserRepository,
         MasterDatabaseService,
-        SlaveDatabaseService,
         UsefulService,
         JwtStrategy,
       ],
@@ -104,7 +102,7 @@ describe('UserController', () => {
           login_type: 'local',
           email: 'test_email@naver.com',
           password: 'test_password',
-          role: 0,
+          role: 'admin',
         })
       ).toBe(true);
     });
