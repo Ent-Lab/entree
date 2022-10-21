@@ -7,10 +7,6 @@ export class GetUserDto extends UserVo {
   @IsNumber()
   id: number;
 
-  @ApiProperty({ description: 'User code', example: 'asdsafs123134' })
-  @IsString()
-  code: string;
-
   @ApiProperty({ description: 'User login type', example: 'local' })
   @IsString()
   login_type: string;

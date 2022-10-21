@@ -6,9 +6,9 @@ export class UserVo {
   @IsNumber()
   id: number;
 
-  @ApiProperty({ description: 'User code', example: 'asdsafs123134' })
+  @ApiProperty({ description: 'User Image url', example: 'asdsafs123134' })
   @IsString()
-  code: string;
+  image_url: string;
 
   @ApiProperty({ description: 'User login type', example: 'local' })
   @IsString()
