@@ -5,16 +5,12 @@ export class PostVo {
   id: number;
 
   @IsString()
-  code: string;
-
-  @IsString()
   title: string;
 
   @IsString()
   contents: string;
 
-  @IsString()
-  fk_user_code: string;
+  fk_user_id: number;
 
   @IsDate()
   created_time: Date;

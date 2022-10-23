@@ -55,10 +55,8 @@ export class UserController {
     @Body() requestCreateUserDto: RequestCreateUserDto
   ): Promise<boolean> {
     try {
-      const code: string = await this.usefulService.genCode();
       const { email, password, login_type, role } = requestCreateUserDto;
       const createUserDto: CreateUserDto = {
-        code,
         email,
         password,
         login_type,

@@ -24,13 +24,12 @@ export class UserRepository {
    */
   async create(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const code: string = createUserDto.code;
       const login_type: string = createUserDto.login_type;
       const email: string = createUserDto.email;
       const password: string = createUserDto.password;
       const role: string = createUserDto.role;
       await this.databaseService.query(
-        `INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', '${role}');`,
+        `INSERT INTO user (code, login_type, email, password, role) VALUES ('${login_type}', '${email}', '${password}', '${role}');`,
         'w'
       );
       return true;
@@ -48,7 +47,7 @@ export class UserRepository {
       return this.databaseService.query(
         `
       SELECT 
-      id, code, login_type, email, password, role, created_time, updated_time FROM
+      id, login_type, email, password, role, created_time, updated_time FROM
       user;
       `,
         'r'
@@ -88,7 +87,7 @@ export class UserRepository {
     try {
       const userData = await this.databaseService.query(`
       SELECT 
-      id, code, login_type, email, password, role, created_time, updated_time FROM
+      id, login_type, email, password, role, created_time, updated_time FROM
       user
       WHERE
       email='${email}'
