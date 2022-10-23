@@ -3,28 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNumber, IsString } from 'class-validator';
 import { PostVo } from '../vo/post.vo';
 
-export class GetPostDto extends PickType(PostVo, [
-  'id',
-  'code',
-  'contents',
-  'fk_user_code',
-  'title',
-  'created_time',
-  'updated_time',
-]) {
+export class GetPostDto extends PostVo {
   @ApiProperty({ description: 'Post id', example: 1 })
   @IsNumber()
   id: number;
 
-  @ApiProperty({
-    description: 'Post user code',
-    example: '4e50c03132843fa0a420a0476bb061d4',
-  })
-  @ApiProperty({
-    description: 'Post code',
-    example: '473daf11aeafd2d09a53d2387f99d75f',
-  })
-  fk_user_code: string;
+  @ApiProperty({ description: 'User id', example: 1 })
+  @IsNumber()
+  fk_user_id: number;
+
   @ApiProperty({ description: 'Post title', example: '게시물 제목입니다. ' })
   @IsString()
   title: string;

@@ -43,7 +43,7 @@ export class PostController {
     @GetUser() user: GetUserDto,
     @Body() requestCreatePostDto: RequestCreatePostDto
   ) {
-    return this.postService.create(user.code, requestCreatePostDto);
+    return this.postService.create(user.id, requestCreatePostDto);
   }
 
   @Get()
@@ -105,7 +105,7 @@ export class PostController {
     @Body() updatePostDto: UpdatePostDto
   ) {
     try {
-      return this.postService.update(user.code, id, updatePostDto);
+      return this.postService.update(user.id, id, updatePostDto);
     } catch (error) {
       throw error;
     }

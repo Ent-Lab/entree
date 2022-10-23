@@ -13,16 +13,14 @@ export class PostService {
     private readonly userfulService: UsefulService
   ) {}
 
-  async create(userCode: string, requestCreatePostDto: RequestCreatePostDto) {
+  async create(userId: number, requestCreatePostDto: RequestCreatePostDto) {
     try {
-      const code = await this.userfulService.genCode();
       const { title, contents } = requestCreatePostDto;
-      const fk_user_code = userCode;
+      const fk_user_id = userId;
       const createPostDto: CreatePostDto = {
-        code,
         title,
         contents,
-        fk_user_code,
+        fk_user_id,
       };
       return this.postRepository.create(createPostDto);
     } catch (error) {
@@ -61,10 +59,10 @@ export class PostService {
     }
   }
 
-  async update(userCode: string, id: number, updatePostDto: UpdatePostDto) {
+  async update(userId: number, id: number, updatePostDto: UpdatePostDto) {
     try {
       const post: GetPostDto = await this.postRepository.selectOne(id);
-      if (post.fk_user_code !== userCode) {
+      if (post.fk_user_id !== userId) {
         throw new ForbiddenException('자신의 정보만 수정할 수 있습니다.');
       }
       updatePostDto.title = updatePostDto.title
