@@ -29,7 +29,7 @@ export class UserRepository {
       const password: string = createUserDto.password;
       const role: string = createUserDto.role;
       await this.databaseService.query(
-        `INSERT INTO user (code, login_type, email, password, role) VALUES ('${login_type}', '${email}', '${password}', '${role}');`,
+        `INSERT INTO user (login_type, email, password, role) VALUES ('${login_type}', '${email}', '${password}', '${role}');`,
         'w'
       );
       return true;
@@ -63,6 +63,7 @@ export class UserRepository {
    * @returns 유저
    */
   async selectOneByCode(id: number): Promise<GetUserDto> {
+    console.log(id);
     try {
       const userData = await this.databaseService.query(
         `
