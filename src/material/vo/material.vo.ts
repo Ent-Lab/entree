@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNumber, IsString } from 'class-validator';
 
-export class MaerialVo {
+export class MaterialVo {
   @ApiProperty({ description: 'Material id', example: 1 })
   @IsNumber()
   id: number;
