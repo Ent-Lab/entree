@@ -98,7 +98,6 @@ describe('UserController', () => {
     it('유저 회원가입 테스트', async () => {
       expect(
         await controller.register({
-          code: 'test_code',
           login_type: 'local',
           email: 'test_email@naver.com',
           password: 'test_password',

@@ -104,7 +104,7 @@ export class UserController {
     }
   }
 
-  @Get(':id')
+  @Get('info/:id')
   @ApiOperation({
     summary: '유저 단일 조회 API(관리자)',
   })
