@@ -6,12 +6,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
 import { DatabaseModule } from 'src/database/database.module';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
 import { UsefulModule } from 'src/useful/useful.module';
 import { UsefulService } from 'src/useful/useful.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { UserController } from './user.controller';
 import { UserModule } from './user.module';
 import { UserRepository } from './user.repository';
@@ -48,7 +47,7 @@ describe('UserController', () => {
         }),
         BullModule.forRoot({
           redis: {
-            host: '43.201.8.8',
+            host: '54.180.96.37',
             port: 6379,
           },
         }),
@@ -61,7 +60,6 @@ describe('UserController', () => {
         UserService,
         UserRepository,
         MasterDatabaseService,
-        SlaveDatabaseService,
         UsefulService,
         JwtStrategy,
       ],
@@ -77,10 +75,6 @@ describe('UserController', () => {
       .spyOn(service, 'register')
       .mockImplementation(async (createUserDto: CreateUserDto) => {
         try {
-          console.log({
-            id: 1,
-            ...createUserDto,
-          });
           users.push({
             id: 1,
             ...createUserDto,
@@ -104,11 +98,10 @@ describe('UserController', () => {
     it('유저 회원가입 테스트', async () => {
       expect(
         await controller.register({
-          code: 'test_code',
           login_type: 'local',
           email: 'test_email@naver.com',
           password: 'test_password',
-          role: 0,
+          role: 'admin',
         })
       ).toBe(true);
     });

@@ -1,22 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MasterDatabaseService } from 'src/database/master.database.service';
-import { SlaveDatabaseService } from 'src/database/slave.database.service';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { DatabaseService } from 'src/database/database.service';
+import { GetUserDto } from './dto/get-user.dto';
 /**
  * 유저 레포지토리입니다.
  */
 @Injectable()
 export class UserRepository {
   constructor(
-    /**
-     * BULL 메시지 큐를 사용하여 DB에 비동기 프로세스로 접근합니다.
-     */
     @InjectQueue('message-queue') private queue: Queue,
-    private readonly slaveDatabaseService: SlaveDatabaseService,
-    private readonly masterDatabaseService: MasterDatabaseService
+    private readonly masterDatabaseService: MasterDatabaseService,
+    private readonly databaseService: DatabaseService
   ) {}
   /**
    * 유저 생성 쿼리
@@ -25,14 +24,13 @@ export class UserRepository {
    */
   async create(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const code: string = createUserDto.code;
       const login_type: string = createUserDto.login_type;
       const email: string = createUserDto.email;
       const password: string = createUserDto.password;
-      const role: number = createUserDto.role;
-      await this.queue.add(
-        'send-query',
-        `INSERT INTO user (code, login_type, email, password, role) VALUES ('${code}','${login_type}', '${email}', '${password}', ${role});`
+      const role: string = createUserDto.role;
+      await this.databaseService.query(
+        `INSERT INTO user (login_type, email, password, role) VALUES ('${login_type}', '${email}', '${password}', '${role}');`,
+        'w'
       );
       return true;
     } catch (error) {
@@ -44,13 +42,16 @@ export class UserRepository {
    * 유저 전체 조회
    * @returns 유저 목록
    */
-  async selectAll(): Promise<object[]> {
+  async selectAll(): Promise<Array<GetUserDto>> {
     try {
-      return this.slaveDatabaseService.query(`
+      return this.databaseService.query(
+        `
       SELECT 
-      id, code, login_type, email, password, created_time, updated_time FROM
+      id, login_type, email, password, role, created_time, updated_time FROM
       user;
-      `);
+      `,
+        'r'
+      );
     } catch (error) {
       throw error;
     }
@@ -58,22 +59,20 @@ export class UserRepository {
 
   /**
    * 유저 Id로 조회
-   * @param id
+   * @param code
    * @returns 유저
    */
-  async selectOneById(id: number): Promise<object | boolean> {
+  async selectOneByCode(id: number): Promise<GetUserDto> {
+    console.log(id);
     try {
-      const userData = await this.slaveDatabaseService.query(`
-      SELECT 
-      id, code, login_type, email, password, created_time, updated_time FROM
-      user
-      WHERE
-      id=${id}
+      const userData = await this.databaseService.query(
+        `
+      SELECT *
+      FROM user
+      WHERE id=${id}
       ;
-      `);
-      if (userData.length === 0) {
-        return false;
-      }
+      `
+      );
       return userData[0];
     } catch (error) {
       throw error;
@@ -85,20 +84,17 @@ export class UserRepository {
    * @param email
    * @returns 이메일
    */
-  async selectOneByEmail(email: string): Promise<object | boolean> {
+  async selectOneByEmail(email: string): Promise<GetUserDto> {
     try {
-      const userData = await this.slaveDatabaseService.query(`
+      const userData = await this.databaseService.query(`
       SELECT 
-      id, code, login_type, email, password, created_time, updated_time FROM
+      id, login_type, email, password, role, created_time, updated_time FROM
       user
       WHERE
       email='${email}'
       ;
       `);
-      if (userData.length === 0) {
-        return false;
-      }
-      return userData;
+      return userData[0];
     } catch (error) {
       throw error;
     }
@@ -123,6 +119,7 @@ export class UserRepository {
         )
       )[0][0];
       if (selectForUpdate === undefined) {
+        con.rollback();
         throw new NotFoundException('존재하지 않는 유저입니다.');
       }
       const login_type = updateUserDto.login_type
@@ -130,14 +127,14 @@ export class UserRepository {
         : selectForUpdate.login_type;
       const email = updateUserDto.email
         ? updateUserDto.email
-        : selectForUpdate.login_type;
+        : selectForUpdate.email;
       const password = updateUserDto.password
         ? updateUserDto.password
         : selectForUpdate.password;
       await con.query(`
         UPDATE user
         SET login_type='${login_type}', email='${email}', password='${password}'
-        WHERE id='${id}';
+        WHERE id=${id};
         `);
       con.commit();
       return true;
@@ -155,11 +152,10 @@ export class UserRepository {
    */
   async deleteOneById(id: number): Promise<boolean> {
     try {
-      await this.queue.add(
-        'send-query',
+      await this.databaseService.query(
         `
       DELETE FROM user 
-      WHERE id='${id}';
+      WHERE id=${id};
       `
       );
       return true;

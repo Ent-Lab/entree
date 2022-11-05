@@ -1,8 +1,9 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 import { UserVo } from '../vo/user.vo';
 
-export class UpdateUserDto extends UserVo {
+export class RequestCreateUserDto extends PartialType(UserVo) {
   @ApiProperty({ description: 'User login type', example: 'local' })
   @IsString()
   login_type: string;

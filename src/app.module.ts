@@ -10,6 +10,8 @@ import * as Joi from 'joi';
 import { MessageConsumer } from './message.consumer';
 import { MasterDatabaseService } from './database/master.database.service';
 import { PostModule } from './post/post.module';
+import { DatabaseService } from './database/database.service';
+import { MaterialModule } from './material/material.module';
 
 const ENV = process.env.NODE_ENV;
 Logger.debug(ENV);
@@ -34,7 +36,7 @@ Logger.debug(ENV);
     UsefulModule,
     BullModule.forRoot({
       redis: {
-        host: '43.201.8.8',
+        host: '54.180.96.37',
         port: 6379,
       },
     }),
@@ -42,8 +44,14 @@ Logger.debug(ENV);
       name: 'message-queue',
     }),
     PostModule,
+    MaterialModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MessageConsumer, MasterDatabaseService],
+  providers: [
+    AppService,
+    MessageConsumer,
+    MasterDatabaseService,
+    DatabaseService,
+  ],
 })
 export class AppModule {}

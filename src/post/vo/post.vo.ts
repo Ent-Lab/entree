@@ -1,8 +1,8 @@
 import { IsString, IsEmail, IsNumber, IsDate } from 'class-validator';
 
 export class PostVo {
-  @IsString()
-  code: string;
+  @IsNumber()
+  id: number;
 
   @IsString()
   title: string;
@@ -10,8 +10,7 @@ export class PostVo {
   @IsString()
   contents: string;
 
-  @IsString()
-  fk_user_code: string;
+  fk_user_id: number;
 
   @IsDate()
   created_time: Date;
