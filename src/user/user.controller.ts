@@ -95,7 +95,7 @@ export class UserController {
     type: Array<GetUserDto>,
   })
   @ApiBearerAuth('token')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   findAll(@GetAdmin() admin: GetUserDto): Promise<object[]> {
     try {
       return this.userService.findAll();
@@ -113,7 +113,7 @@ export class UserController {
     description: '유저 조회 완료',
   })
   @ApiBearerAuth('token')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   findOne(
     @GetAdmin() admin: GetUserDto,
     @Param('id') id: string
@@ -126,7 +126,7 @@ export class UserController {
   }
 
   @Get('info')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   @ApiOperation({
     summary: '내 정보 조회 API',
   })
@@ -157,7 +157,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   update(
     @GetUser() user: GetUserDto,
     @Body() updateUserDto: UpdateUserDto
@@ -183,7 +183,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   updateOne(
     @GetAdmin() admin: GetUserDto,
     @Param() id: string,
@@ -210,7 +210,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   remove(@GetUser() user: GetUserDto): Promise<boolean> {
     try {
       return this.userService.remove(user.id);
@@ -233,7 +233,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  @UseGuards(AuthGuard())
+  // @UseGuards(AuthGuard())
   removeOne(
     @GetAdmin() admin: GetUserDto,
     @Param() id: string
