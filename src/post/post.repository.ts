@@ -1,9 +1,10 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { GetPostDto } from './dto/get-post.dto';
 
 @Injectable()
 export class PostRepository {
@@ -12,16 +13,20 @@ export class PostRepository {
     private readonly databaseService: DatabaseService
   ) {}
 
+  /**
+   * 게시물 생성
+   * @param createPostDto
+   * @returns
+   */
   async create(createPostDto: CreatePostDto) {
     try {
       const { title, contents, fk_user_id, summary, thumbnail } = createPostDto;
-      console.log(createPostDto);
       await this.databaseService.query(
         `
         INSERT INTO post
-        (id, title, contents, fk_user_code, summary, thumbnail)
+        (title, contents, fk_user_id, summary, thumbnail)
         VALUES
-        ('${title}', '${contents}', '${fk_user_id}');
+        ('${title}', '${contents}', '${fk_user_id}', '${summary}', '${thumbnail}');
         `
       );
       return true;
@@ -29,8 +34,11 @@ export class PostRepository {
       throw error;
     }
   }
-
-  async selectAll() {
+  /**
+   * 게시물 전체 조회
+   * @returns 게시물 목록
+   */
+  async selectAll(): Promise<GetPostDto[]> {
     try {
       return this.databaseService.query(
         `
@@ -43,7 +51,13 @@ export class PostRepository {
     }
   }
 
-  async selectList(page: number, perPage: number): Promise<any[]> {
+  /**
+   * 페이지별 게시물 조회
+   * @param page
+   * @param perPage
+   * @returns 게시물 목록
+   */
+  async selectList(page: number, perPage: number): Promise<GetPostDto[]> {
     try {
       //
       const startPoint = (page - 1) * perPage;
@@ -59,7 +73,12 @@ export class PostRepository {
     }
   }
 
-  async selectOne(id: number): Promise<any> {
+  /**
+   * 게시물 단일 조회
+   * @param id
+   * @returns
+   */
+  async selectOne(id: number): Promise<GetPostDto> {
     try {
       const row = await this.databaseService.query(
         `
@@ -73,7 +92,12 @@ export class PostRepository {
     }
   }
 
-  async selectByUser(userId: number): Promise<any> {
+  /**
+   * 유저별 게시물 조회
+   * @param userId
+   * @returns
+   */
+  async selectByUser(userId: number): Promise<GetPostDto> {
     try {
       const row = this.databaseService.query(
         `
@@ -87,7 +111,12 @@ export class PostRepository {
     }
   }
 
-  async selectByTitle(title: string): Promise<any> {
+  /**
+   * 게시물 제목으로 검색
+   * @param title
+   * @returns
+   */
+  async selectByTitle(title: string): Promise<GetPostDto> {
     try {
       const row = await this.databaseService.query(
         `
@@ -101,7 +130,13 @@ export class PostRepository {
     }
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto) {
+  /**
+   * 게시물 수정
+   * @param id
+   * @param updatePostDto
+   * @returns true
+   */
+  async update(id: number, updatePostDto: UpdatePostDto): Promise<boolean> {
     try {
       await this.databaseService.query(
         `
@@ -116,7 +151,12 @@ export class PostRepository {
     }
   }
 
-  async delete(id: number) {
+  /**
+   * 게시물 삭제
+   * @param id
+   * @returns true
+   */
+  async delete(id: number): Promise<boolean> {
     await this.databaseService.query(`
     DELETE FROM post
     WHERE id=${id};

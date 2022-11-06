@@ -2,15 +2,9 @@ import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job, Queue } from 'bull';
 import { DatabaseService } from './database/database.service';
-import { MasterDatabaseService } from './database/master.database.service';
-
 @Processor('message-queue')
 export class MessageConsumer {
-  constructor(
-    @InjectQueue('message-queue') private queue: Queue,
-    private readonly masterDatabaseService: MasterDatabaseService,
-    private readonly databaseService: DatabaseService
-  ) {}
+  constructor(private readonly databaseService: DatabaseService) {}
   @Process('send-query')
   async sendQuery(job: Job<string>) {
     try {

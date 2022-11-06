@@ -42,7 +42,12 @@ export class DatabaseService {
       throw error;
     }
   }
-  // Single Query
+  /**
+   * 단일 쿼리
+   * @param sql
+   * @param option
+   * @returns
+   */
   async query(sql: string, option?: string) {
     const conn = await this.getConnection(option);
     try {
@@ -62,7 +67,10 @@ export class DatabaseService {
     }
   }
 
-  //Transaction
+  /**
+   * 트랜젝션
+   * @param sqls
+   */
   async transaction(sqls: string[]) {
     const conn = await this.getConnection('w');
     try {

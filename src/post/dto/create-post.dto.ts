@@ -1,9 +1,9 @@
-import { PickType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 import { Post } from '../vo/post.vo';
 
-export class CreatePostDto extends Post {
+export class CreatePostDto extends PartialType(Post) {
   @ApiProperty({ description: 'Post contents', example: '게시물 내용입니다. ' })
   @IsString()
   contents: string;

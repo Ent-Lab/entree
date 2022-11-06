@@ -13,20 +13,8 @@ export class PostService {
     private readonly userfulService: UsefulService
   ) {}
 
-  async create(userId: number, requestCreatePostDto: RequestCreatePostDto) {
+  async create(createPostDto: CreatePostDto) {
     try {
-      const { title, contents, thumbnail, summary } = requestCreatePostDto;
-      const fk_user_id = userId;
-      const createPostDto: CreatePostDto = {
-        title,
-        contents,
-        fk_user_id,
-        thumbnail: '',
-        summary: '',
-        id: 0,
-        created_time: undefined,
-        updated_time: undefined,
-      };
       return this.postRepository.create(createPostDto);
     } catch (error) {
       throw error;

@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MasterDatabaseService } from 'src/database/master.database.service';
-
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectQueue } from '@nestjs/bull';
@@ -14,7 +12,6 @@ import { GetUserDto } from './dto/get-user.dto';
 export class UserRepository {
   constructor(
     @InjectQueue('message-queue') private queue: Queue,
-    private readonly masterDatabaseService: MasterDatabaseService,
     private readonly databaseService: DatabaseService
   ) {}
   /**
@@ -110,7 +107,7 @@ export class UserRepository {
     id: number,
     updateUserDto: UpdateUserDto
   ): Promise<boolean> {
-    const con = await this.masterDatabaseService.getConnection();
+    const con = await this.databaseService.getConnection();
     try {
       await con.beginTransaction();
       const selectForUpdate = (

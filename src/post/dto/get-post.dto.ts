@@ -1,9 +1,9 @@
-import { PickType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNumber, IsString } from 'class-validator';
 import { Post } from '../vo/post.vo';
 
-export class GetPostDto extends Post {
+export class GetPostDto extends PartialType(Post) {
   @ApiProperty({ description: 'Post id', example: 1 })
   @IsNumber()
   id: number;

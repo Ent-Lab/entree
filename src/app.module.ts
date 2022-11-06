@@ -8,7 +8,6 @@ import { BullModule } from '@nestjs/bull';
 import { UsefulModule } from './useful/useful.module';
 import * as Joi from 'joi';
 import { MessageConsumer } from './message.consumer';
-import { MasterDatabaseService } from './database/master.database.service';
 import { PostModule } from './post/post.module';
 import { DatabaseService } from './database/database.service';
 import { MaterialModule } from './material/material.module';
@@ -47,11 +46,6 @@ Logger.debug(ENV);
     MaterialModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    MessageConsumer,
-    MasterDatabaseService,
-    DatabaseService,
-  ],
+  providers: [AppService, MessageConsumer, DatabaseService],
 })
 export class AppModule {}

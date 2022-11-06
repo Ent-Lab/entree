@@ -44,18 +44,32 @@ export class PostController {
     },
   })
   @UseGuards(AuthGuard())
-  create(
+  async create(
     @GetUser() user: GetUserDto,
     @Body() requestCreatePostDto: RequestCreatePostDto
-  ) {
+  ): Promise<boolean> {
     try {
-      return this.postService.create(user.id, requestCreatePostDto);
+      const { title, contents, summary, thumbnail } = requestCreatePostDto;
+      const createPostDto: CreatePostDto = {
+        title,
+        contents,
+        summary,
+        thumbnail,
+        fk_user_id: user.id,
+      };
+      return this.postService.create(createPostDto);
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
 
+  /**
+   * 게시물 목록 조회
+   * 페이지네이션 가능
+   * @param page
+   * @param perPage
+   * @returns
+   */
   @Get()
   @ApiOperation({
     summary: '게시물 목록 조회 API',

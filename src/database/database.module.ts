@@ -1,8 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { DatabaseService } from './database.service';
-import { MasterDatabaseService } from './master.database.service';
 
 @Module({
-  providers: [MasterDatabaseService, DatabaseService],
+  providers: [DatabaseService],
 })
 export class DatabaseModule {}
