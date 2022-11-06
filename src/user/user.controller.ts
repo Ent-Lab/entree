@@ -11,7 +11,6 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UsefulService } from 'src/useful/useful.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetAdmin, GetUser, Roles } from 'src/custom.decorator';
@@ -28,17 +27,14 @@ import { TokenDto } from './dto/token.dto';
 @ApiTags('유저 API')
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly usefulService: UsefulService
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   /**
    * 회원가입
    * @param createUserDto
    * @returns true
    */
-  @Post()
+  @Post('register')
   @ApiOperation({
     summary: '회원가입 API',
   })
@@ -68,6 +64,12 @@ export class UserController {
     }
   }
 
+  /**
+   * 로그인
+   * @param loginDto
+   * @returns tokenDto
+   */
+  @Post('login')
   @ApiOperation({
     summary: '로그인 API',
   })
@@ -76,7 +78,6 @@ export class UserController {
     description: '유저 생성 완료',
     type: TokenDto,
   })
-  @Post('login')
   async login(@Body() loginDto: LoginDto) {
     try {
       return this.userService.login(loginDto);
@@ -85,6 +86,11 @@ export class UserController {
     }
   }
 
+  /**
+   * 유저 전체 조회(관리자)
+   * @param admin
+   * @returns
+   */
   @Get()
   @ApiOperation({
     summary: '유저 전체 조회 API(관리자)',
@@ -95,7 +101,7 @@ export class UserController {
     type: Array<GetUserDto>,
   })
   @ApiBearerAuth('token')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   findAll(@GetAdmin() admin: GetUserDto): Promise<object[]> {
     try {
       return this.userService.findAll();
@@ -104,6 +110,12 @@ export class UserController {
     }
   }
 
+  /**
+   * 유저 단일 조회(관리자)
+   * @param admin
+   * @param id
+   * @returns
+   */
   @Get('info/:id')
   @ApiOperation({
     summary: '유저 단일 조회 API(관리자)',
@@ -113,7 +125,7 @@ export class UserController {
     description: '유저 조회 완료',
   })
   @ApiBearerAuth('token')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   findOne(
     @GetAdmin() admin: GetUserDto,
     @Param('id') id: string
@@ -124,9 +136,13 @@ export class UserController {
       throw error;
     }
   }
-
-  @Get('info')
-  // @UseGuards(AuthGuard())
+  /**
+   * 내 정보 조회
+   * @param user
+   * @returns
+   */
+  @Get('mypage')
+  @UseGuards(AuthGuard())
   @ApiOperation({
     summary: '내 정보 조회 API',
   })
@@ -143,6 +159,12 @@ export class UserController {
     }
   }
 
+  /**
+   * 내 정보 수정
+   * @param user
+   * @param updateUserDto
+   * @returns
+   */
   @Patch()
   @ApiOperation({
     summary: '내 정보 수정 API',
@@ -157,7 +179,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   update(
     @GetUser() user: GetUserDto,
     @Body() updateUserDto: UpdateUserDto
@@ -169,6 +191,13 @@ export class UserController {
     }
   }
 
+  /**
+   * 내 정보 수정
+   * @param admin
+   * @param id
+   * @param updateUserDto
+   * @returns
+   */
   @Patch(':id')
   @ApiOperation({
     summary: '유저 정보 수정 API(관리자)',
@@ -183,7 +212,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   updateOne(
     @GetAdmin() admin: GetUserDto,
     @Param() id: string,
@@ -196,6 +225,11 @@ export class UserController {
     }
   }
 
+  /**
+   * 유저 탈퇴
+   * @param user
+   * @returns
+   */
   @Delete()
   @ApiOperation({
     summary: '유저 탈퇴 API(자기 정보만 접근 가능)',
@@ -210,7 +244,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   remove(@GetUser() user: GetUserDto): Promise<boolean> {
     try {
       return this.userService.remove(user.id);
@@ -219,6 +253,12 @@ export class UserController {
     }
   }
 
+  /**
+   * 유저 삭제(관리자)
+   * @param admin
+   * @param id
+   * @returns
+   */
   @Delete(':id')
   @ApiOperation({
     summary: '유저 삭제 API(관리자)',
@@ -233,7 +273,7 @@ export class UserController {
     },
   })
   @ApiBearerAuth('token')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   removeOne(
     @GetAdmin() admin: GetUserDto,
     @Param() id: string

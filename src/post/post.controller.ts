@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  ForbiddenException,
   Query,
 } from '@nestjs/common';
 import { PostService } from './post.service';
@@ -25,6 +24,12 @@ import { GetPostDto } from './dto/get-post.dto';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  /**
+   * 게시물 작성
+   * @param user
+   * @param requestCreatePostDto
+   * @returns
+   */
   @Post()
   @ApiOperation({
     summary: '게시물 작성 API',
@@ -43,7 +48,12 @@ export class PostController {
     @GetUser() user: GetUserDto,
     @Body() requestCreatePostDto: RequestCreatePostDto
   ) {
-    return this.postService.create(user.id, requestCreatePostDto);
+    try {
+      return this.postService.create(user.id, requestCreatePostDto);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   @Get()

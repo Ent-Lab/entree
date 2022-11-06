@@ -15,12 +15,17 @@ export class PostService {
 
   async create(userId: number, requestCreatePostDto: RequestCreatePostDto) {
     try {
-      const { title, contents } = requestCreatePostDto;
+      const { title, contents, thumbnail, summary } = requestCreatePostDto;
       const fk_user_id = userId;
       const createPostDto: CreatePostDto = {
         title,
         contents,
         fk_user_id,
+        thumbnail: '',
+        summary: '',
+        id: 0,
+        created_time: undefined,
+        updated_time: undefined,
       };
       return this.postRepository.create(createPostDto);
     } catch (error) {

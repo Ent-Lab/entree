@@ -14,12 +14,12 @@ export class PostRepository {
 
   async create(createPostDto: CreatePostDto) {
     try {
-      const { title, contents, fk_user_id } = createPostDto;
+      const { title, contents, fk_user_id, summary, thumbnail } = createPostDto;
       console.log(createPostDto);
       await this.databaseService.query(
         `
         INSERT INTO post
-        (code, title, contents, fk_user_code)
+        (id, title, contents, fk_user_code, summary, thumbnail)
         VALUES
         ('${title}', '${contents}', '${fk_user_id}');
         `

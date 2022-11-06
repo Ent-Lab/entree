@@ -1,6 +1,6 @@
 import { IsString, IsEmail, IsNumber, IsDate } from 'class-validator';
 
-export class PostVo {
+export class Post {
   @IsNumber()
   id: number;
 
@@ -11,6 +11,12 @@ export class PostVo {
   contents: string;
 
   fk_user_id: number;
+
+  @IsString()
+  summary: string;
+
+  @IsString()
+  thumbnail: string;
 
   @IsDate()
   created_time: Date;

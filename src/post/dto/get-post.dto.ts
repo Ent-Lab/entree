@@ -1,9 +1,9 @@
 import { PickType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNumber, IsString } from 'class-validator';
-import { PostVo } from '../vo/post.vo';
+import { Post } from '../vo/post.vo';
 
-export class GetPostDto extends PostVo {
+export class GetPostDto extends Post {
   @ApiProperty({ description: 'Post id', example: 1 })
   @IsNumber()
   id: number;
@@ -19,6 +19,15 @@ export class GetPostDto extends PostVo {
   @ApiProperty({ description: 'Post contents', example: '게시물 내용입니다. ' })
   @IsString()
   contents: string;
+
+  @ApiProperty({
+    description: 'Post thumbnail',
+    example: '게시물 썸네일입니다. ',
+  })
+  thumbnail: string;
+
+  @ApiProperty({ description: 'Post summary', example: '게시물 요약입니다. ' })
+  summary: string;
 
   @ApiProperty({
     description: 'Post created time',
